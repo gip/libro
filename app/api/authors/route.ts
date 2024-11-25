@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { pool } from '@/lib/db' 
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest): Promise<NextResponse> {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -11,7 +11,6 @@ export async function POST(req: NextRequest) {
   }
 
   const { user } = session;
-  const { status, title, content, history } = await req.json();
 
   if (!user || !user.name) {
     return NextResponse.json({ success: false, message: "Invalid user" }, { status: 401 });
@@ -27,16 +26,15 @@ export async function POST(req: NextRequest) {
     }
 
     const userId = userResult.rows[0].id;
-    const history0 = history || { history: null };
 
-    const draftResult = await client.query(
-      'INSERT INTO drafts ("userId", status, title, content, history) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [userId, 'editing', title, content, history0]
+    const authorsResult = await client.query(
+      'SELECT * FROM authors WHERE "userId" = $1',
+      [userId]
     );
 
-    const draft = draftResult.rows[0];
+    const authors = authorsResult.rows;
 
-    return NextResponse.json({ success: true, draft });
+    return NextResponse.json({ success: true, authors });
   } finally {
     client.release();
   }

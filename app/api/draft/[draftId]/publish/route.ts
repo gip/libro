@@ -2,10 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { pool } from '@/lib/db'
-
-const sign = async (draftId: string) => {
-  return '1234';
-}
+import { verifyCloudProof, IVerifyResponse, ISuccessResult, VerificationLevel } from '@worldcoin/minikit-js'
+import { isJsonEqual, sortAndStringifyJson } from '@/lib/json';
 
 export async function PUT(
   req: NextRequest,
@@ -18,46 +16,97 @@ export async function PUT(
   }
 
   const { user } = session;
-  console.log('PAR', await params);
+  const fullPayload = await req.json();
   const { draftId } = await params;
 
   if (!user || !user.name) {
     return NextResponse.json({ success: false, message: "Invalid user" }, { status: 401 });
   }
 
+  const { publication, verification } = fullPayload;
+  const { publication_title, publication_content, publication_date, author_id_libro } = publication;
+
+  const signal = sortAndStringifyJson(publication);
+
+  console.log('Signal', signal);
+
+  const proof: ISuccessResult = {
+    proof: verification.proof,
+    merkle_root: verification.merkle_root,
+    nullifier_hash: verification.nullifier_hash,
+    verification_level: VerificationLevel.Orb,
+  };
+
+  // verify the proof
+  const verifyRes = (await verifyCloudProof(
+    proof,
+    process.env.APP_ID as `app_${string}`,
+    'written-by-a-human',
+    signal,
+  )) as IVerifyResponse
+
+  if(!verifyRes.success) {
+    console.log('Invalid proof', verifyRes);
+    return NextResponse.json({ success: false, message: "Invalid proof" }, { status: 400 });
+  }
+
   const client = await pool.connect();
 
+  // Check that the draft belongs to the user
+  const userResult = await client.query(
+    'SELECT id FROM users WHERE name = $1',
+    [user.name]
+  );
+
+  if (userResult.rows.length === 0) {
+    return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
+  }
+
+  const userId = userResult.rows[0].id;
+
+  const draftResult = await client.query(
+    'SELECT * FROM drafts WHERE "id" = $1 AND "userId" = $2',
+    [draftId, userId]
+  );
+
+  if (draftResult.rows.length === 0) {
+    return NextResponse.json({ success: false, message: "Draft not found or does not belong to the user" }, { status: 404 });
+  }
+
+  const draft = draftResult.rows[0];
+
+  // Check that the title and content are similar to what is in the DB
+  if (draft.title !== publication_title || !isJsonEqual(draft.content, publication_content)) {
+    return NextResponse.json({ success: false, message: "Title or content does not match the draft" }, { status: 400 });
+  }
+
+  // Check that the date is not in the future and not 5 mins older than the current date and time
+  const publicationDate = new Date(publication_date);
+  const now = new Date();
+  const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
+  if (publicationDate > now || publicationDate < fiveMinutesAgo) {
+    return NextResponse.json({ success: false, message: "Invalid publication date" }, { status: 400 });
+  }
+
+  // Check that the author belongs to the user
+  const authorResult = await client.query(
+    'SELECT * FROM authors WHERE "id" = $1 AND "userId" = $2',
+    [author_id_libro, userId]
+  );
+
+  if (authorResult.rows.length === 0) {
+    return NextResponse.json({ success: false, message: "Author not found or does not belong to the user" }, { status: 404 });
+  }
+  
   try {
     // Begin transaction
     await client.query('BEGIN');
 
-    // Get user ID
-    const userResult = await client.query('SELECT id FROM users WHERE name = $1', [user.name]);
-    if (userResult.rows.length === 0) {
-      return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
-    }
-    const userId = userResult.rows[0].id;
-
-    console.log('draftId', draftId, userId);
-    // Get draft
-    const draftResult = await client.query(
-      'SELECT * FROM drafts WHERE "id" = $1 AND "userId" = $2',
-      [draftId, userId]
-    );
-
-    if (draftResult.rows.length === 0) {
-      return NextResponse.json({ success: false, message: "Draft not found" }, { status: 404 });
-    }
-
-    const draft = draftResult.rows[0];
-
-    // Generate proof using sign function
-    const proof = await sign(draftId);
-
-    // Create document
-    const documentResult = await client.query(
-      'INSERT INTO documents ("userId", proof, title, content) VALUES ($1, $2, $3, $4) RETURNING *',
-      [userId, proof, draft.title, draft.content]
+    const version = '1';
+    // Create article
+    const articleResult = await client.query(
+      'INSERT INTO publications ("userId", "authorId", proof, signal, title, content, version) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [userId, author_id_libro, proof, signal, draft.title, draft.content, version]
     );
 
     // Update draft status to published
@@ -71,7 +120,7 @@ export async function PUT(
 
     return NextResponse.json({ 
       success: true, 
-      document: documentResult.rows[0]
+      document: articleResult.rows[0]
     });
   } catch (error) {
     // Rollback in case of error
