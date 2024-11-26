@@ -7,13 +7,20 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { FeedItem } from '@/components/FeedItem'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue } from "@/components/ui/select"
 import {
   MiniKit,
   VerificationLevel,
   VerifyCommandInput
-} from "@worldcoin/minikit-js";
-import { JsonValue, sortAndStringifyJson } from '@/lib/json';
+} from "@worldcoin/minikit-js"
+import { JsonValue, sortAndStringifyJson } from '@/lib/json'
+import Editor from '@/components/Editor'
+
 
 type DraftData = {
   id?: string;
@@ -242,6 +249,7 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
           </Button>
         )}
       </div>
+      <Editor authors={authors} />
     </div>
   );
 }
