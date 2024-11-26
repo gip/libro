@@ -38,7 +38,6 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
   const [authors, setAuthors] = useState<Author[]>([]);
 
   useEffect(() => {
-    console.log('draftId', draftId);
     const fetchDraft = async () => {
       if (draftId) {
         try {

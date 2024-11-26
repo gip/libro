@@ -16,7 +16,6 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-visually-hidden": "^1.1.0",
     "@worldcoin/minikit-js": "1.2.0",
-    "abitype": "^1.0.6",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "eruda": "^3.2.3",
