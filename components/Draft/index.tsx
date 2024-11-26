@@ -81,18 +81,34 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
   }, []);
 
   const handleSave = async () => {
-    if (!draftId) return;
     try {
-      const raw = await fetch(`/api/draft/${draftId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(draft),
-      });
-      const response = await raw.json();
-      if (response.success) {
-        setOriginalDraft(draft); // Update original draft to the saved state
+      let raw, response;
+      if (!draftId) {
+        raw = await fetch(`/api/draft`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(draft),
+        });
+        response = await raw.json();
+        if (response.success) {
+          setDraft(response.draft);
+          setOriginalDraft(response.draft);
+          router.push(`/d/${response.draft.id}`);
+        }
+      } else {
+        raw = await fetch(`/api/draft/${draftId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(draft),
+        });
+        response = await raw.json();
+        if (response.success) {
+          setOriginalDraft(draft); // Update original draft to the saved state
+        }
       }
     } catch (error) {
       console.error('Failed to save draft:', error);
