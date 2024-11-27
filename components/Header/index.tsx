@@ -1,6 +1,5 @@
 'use client'
 
-import { Session } from 'next-auth'
 import { useSession } from 'next-auth/react'
 import { signIn, signOut } from 'next-auth/react'
 
