@@ -11,7 +11,7 @@ import {
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
-export const Diamond = () => {
+export const Diamond = ({ atBottom = true }) => {
   const { data: session } = useSession()
   const router = useRouter()
 
@@ -19,7 +19,7 @@ export const Diamond = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          className="fixed bottom-4 right-4 rounded-full w-10 h-10"
+          className={`fixed ${atBottom ? 'bottom-4' : ''} right-4 rounded-full w-10 h-10`}
           size="icon"
         >
           <DiamondIcon className="h-4 w-4" />
@@ -39,6 +39,9 @@ export const Diamond = () => {
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => router.push('/a/new')}>
               New author
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push('/settings')}>
+              Settings
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => signOut()}>
               Logout
