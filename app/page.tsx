@@ -1,5 +1,6 @@
 'use client'
 
+import { Diamond } from '@/components/Diamond'
 import { Feed } from '@/components/Feed'
 import { Header } from '@/components/Header'
 import { useSession } from 'next-auth/react'
@@ -9,11 +10,13 @@ export default function Home() {
 
   return (<>
     <Header />
-    <div className="text-center mt-8">
-      <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-        Welcome!
+    <div className="text-center mt-4">
+      <h1 className="text-5xl">
+        For Human Creativity
       </h1>
+      <div style={{ width: '150px', height: '2px', backgroundColor: 'black', margin: '10px auto 0' }}></div>
     </div>
     {status === 'authenticated' && <Feed />}
+    <Diamond />
   </>);
 }

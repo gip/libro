@@ -3,14 +3,9 @@
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Button } from "@/components/ui/button"
-import { Plus } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
 import type { FeedItemD } from '@/components/FeedItem'
 import { FeedItem } from '@/components/FeedItem'
-import { Diamond } from '@/components/Diamond'
 
 type FeedStatus = 'loading' | 'ready'
 
@@ -54,15 +49,17 @@ export const Feed = () => {
 
   return (
     <>      
-      <div className="mt-14 min-h-[calc(100vh-3.5rem)]">
+      <div className="mt-4 min-h-[calc(100vh-3.5rem)]">
         <main className="w-full">
+          <div className="text-left p-4">
+            <h2 className="text-2xl font-bold">Drafts</h2>
+          </div>
           {feedStatus === 'loading' &&
               <FeedLoading />}
           {feedStatus === 'ready' &&
             <FeedContent />}
         </main>
         <Separator className="my-4" />
-        <Diamond />
       </div>
     </>
   )

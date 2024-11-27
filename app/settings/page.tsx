@@ -21,9 +21,11 @@ const Home = () => {
     <div className="text-center mt-8">
       <h2 className="text-2xl font-bold">User Information</h2>
       {session && session.user && (
-        <p className="mt-4 text-xs bg-gray-200">{session.user.name}</p>
+        <p className="mt-4 text-xs bg-gray-200 p-2 break-words">
+          {session.user.name}
+        </p>
       )}
-      <p className="mt-2 text-sm text-gray-500">
+      <p className="mt-2 text-sm text-gray-500 p-4">
         This unique ID is the only information we store about you.
         It is application-specific and cannot be traced.
       </p>

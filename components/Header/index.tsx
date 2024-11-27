@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, LogIn } from 'lucide-react'
-
+import { Diamond } from '@/components/Diamond'
 export const Header = () => {
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -21,7 +21,6 @@ export const Header = () => {
   const showBackButton = () => {
     return true
   }
-
 
   return (
     <header className="sticky top-0 z-10 bg-background border-b shadow-sm">
@@ -49,6 +48,9 @@ export const Header = () => {
             </Button>
           )}
         </div>
+        {session && (
+          <Diamond atBottom={false} />
+        )}
       </div>
     </header>
   )
