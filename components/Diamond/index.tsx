@@ -40,6 +40,9 @@ export const Diamond = () => {
             <DropdownMenuItem onClick={() => router.push('/a/new')}>
               New author
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push('/settings')}>
+              Settings
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => signOut()}>
               Logout
             </DropdownMenuItem>

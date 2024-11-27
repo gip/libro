@@ -14,7 +14,7 @@ import { Diamond } from '@/components/Diamond'
 
 type FeedStatus = 'loading' | 'ready'
 
-export const Top = () => {
+export const Feed = () => {
   const { data: session, status } = useSession(); 
   const [feedStatus, setFeedStatus] = useState<FeedStatus>('loading')
   const [feedItems, setFeedItems] = useState<FeedItemD[]>([])
