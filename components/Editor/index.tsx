@@ -206,23 +206,27 @@ export default function Editor({ authors, initialContent, setContent,
           type="text"
           value={title}
           onChange={(e) => {
-            setLocalTitle(e.target.value)
-            setTitle(e.target.value)
+            const newValue = e.target.value.slice(0, 80);
+            setLocalTitle(newValue);
+            setTitle(newValue);
           }}
           placeholder="Title"
-          className="editor-input text-2xl sm:text-3xl md:text-4xl font-bold px-0 placeholder:text-muted-foreground/30"
+          className="editor-input text-4xl sm:text-4xl md:text-4xl px-0"
           readOnly={!editable}
         />
+        
         {editable || subtitle ? (
           <Input
             type="text"
             value={subtitle}
             onChange={(e) => {
-              setLocalSubtitle(e.target.value)
-              setSubtitle(e.target.value)
+              const newValue = e.target.value.slice(0, 80);
+              setLocalSubtitle(newValue);
+              setSubtitle(newValue);
             }}
             placeholder="Add a subtitle..."
-            className="editor-input text-lg sm:text-xl text-muted-foreground px-0 placeholder:text-muted-foreground/30"
+            className="editor-input text-lg sm:text-xl text-muted-foreground px-0 
+                       placeholder:text-muted-foreground/30 break-words"
             readOnly={!editable}
           />
         ) : null}

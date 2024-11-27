@@ -11,7 +11,7 @@ import {
 } from "@worldcoin/minikit-js"
 import { JsonValue, sortAndStringifyJson } from '@/lib/json'
 import Editor from '@/components/Editor'
-
+import { Diamond } from '@/components/Diamond'
 
 type DraftData = {
   id?: string;
@@ -101,6 +101,7 @@ export const Publication = ({ publicationId }: { publicationId: string | null })
               setAuthorId={setAuthorId}
               editable={false}
               />
+        <Diamond />
     </div>
   );
 }

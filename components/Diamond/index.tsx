@@ -1,21 +1,17 @@
 'use client'
 
 import { Button } from "@/components/ui/button"
-import { Diamond as DiamondIcon } from 'lucide-react' // Assuming there's a Diamond icon in lucide-react
+import { Diamond as DiamondIcon } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { signOut, useSession } from 'next-auth/react'
+import { signIn, signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
-type DiamondProps = {
-  onNewDraft: () => void
-}
-
-export const Diamond = ({ onNewDraft }: DiamondProps) => {
+export const Diamond = () => {
   const { data: session } = useSession()
   const router = useRouter()
 
@@ -31,16 +27,23 @@ export const Diamond = ({ onNewDraft }: DiamondProps) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={onNewDraft}>
-          New draft
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push('/a/new')}>
-          New author
-        </DropdownMenuItem>
-        {session && (
-          <DropdownMenuItem onClick={() => signOut()}>
-            Logout
+        {!session && (
+          <DropdownMenuItem onClick={() => signIn('worldcoin')}>
+            Login
           </DropdownMenuItem>
+        )}
+        {session && (
+          <>
+            <DropdownMenuItem onClick={() => router.push('/d/new')}>
+              New draft
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push('/a/new')}>
+              New author
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => signOut()}>
+              Logout
+            </DropdownMenuItem>
+          </>
         )}
       </DropdownMenuContent>
     </DropdownMenu>
