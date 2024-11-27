@@ -17,23 +17,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const ErudaProvider = dynamic(
-    () =>
-      import("../components/Eruda").then((c) => c.ErudaProvider),
-    {
-      ssr: true,
-    }
-  );
+  const isProduction = process.env.NODE_ENV === 'production';
+  const ErudaProvider = !isProduction
+    ? dynamic(() => import("../components/Eruda").then((c) => c.ErudaProvider), { ssr: true })
+    : ({ children }: { children: React.ReactNode }) => <>{children}</>;
 
   return (
     <html lang="en">
       <NextAuthProvider>
         <body className={inter.className}>
-        <ErudaProvider>
-          <MiniKitProvider>
-            <>{children}</>
-          </MiniKitProvider>
-        </ErudaProvider>
+          <ErudaProvider>
+            <MiniKitProvider>
+              <>{children}</>
+            </MiniKitProvider>
+          </ErudaProvider>
         </body>
       </NextAuthProvider>
     </html>

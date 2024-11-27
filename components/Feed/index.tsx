@@ -10,6 +10,7 @@ import { Plus } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { FeedItemD } from '@/components/FeedItem'
 import { FeedItem } from '@/components/FeedItem'
+import { Diamond } from '@/components/Diamond'
 
 type FeedStatus = 'loading' | 'ready'
 
@@ -70,15 +71,7 @@ export const Top = () => {
             <FeedContent />}
         </main>
         <Separator className="my-4" />
-
-        <Button
-          onClick={addNewItem}
-          className="fixed bottom-4 right-4 rounded-full w-10 h-10"
-          size="icon"
-        >
-          <Plus className="h-4 w-4" />
-          <span className="sr-only">Add new item</span>
-        </Button>
+        <Diamond onNewDraft={addNewItem} />
       </div>
     </>
   )

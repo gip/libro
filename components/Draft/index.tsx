@@ -154,6 +154,7 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
         author_name_libro: author.name,
         publication_content: draft.content,
         publication_title: draft.title,
+        publication_subtitle: draft.subtitle,
         publication_date: new Date().toISOString(),
       };
       const verifyPayload: VerifyCommandInput = {
@@ -178,7 +179,8 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
       });
       const response = await raw.json();
       if (response.success) {
-        router.push('/');
+        const publicationId = response.publicationId;
+        router.push(`/p/${publicationId}`);
       } else {
         console.log('Failed to publish:', response);
         throw new Error('Failed to publish');
@@ -211,7 +213,6 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
   };
 
   const isDraftChanged = useCallback(() => {
-    console.log(draft, originalDraft);
     return JSON.stringify(draft) !== JSON.stringify(originalDraft);
   }, [draft, originalDraft]);
 

@@ -90,7 +90,7 @@ export const Publication = ({ publicationId }: { publicationId: string | null })
       <div className="text-xs text-muted-foreground text-center">
         Signed by {authors[0].name} on {dateSigned}. <br />Proof can be verified on Worldchain.
       </div>
-      <Editor authors={authors}
+        <Editor authors={authors}
               initialContent={initialContent}
               initialTitle={initialTitle}
               initialSubtitle={initialSubtitle}

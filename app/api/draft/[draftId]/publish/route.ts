@@ -75,6 +75,7 @@ export async function PUT(
 
   const draft = draftResult.rows[0];
 
+  console.log('SUB', draft.subtitle, publication_subtitle);
   // Consolidated check for title, subtitle, and content
   if (
     draft.title !== publication_title || 
