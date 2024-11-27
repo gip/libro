@@ -2,6 +2,7 @@
 
 import { useSession } from 'next-auth/react'
 import { signIn, signOut } from 'next-auth/react'
+import Link from 'next/link'
 
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
@@ -31,7 +32,9 @@ export const Header = () => {
             </nav>
           </SheetContent>
         </Sheet>
-        <h1 className="text-xl font-bold">Libro</h1>
+        <Link href="/" passHref>
+          <h1 className="text-xl font-bold cursor-pointer">Libro</h1>
+        </Link>
         <h2>{status}</h2>
          {!session && <Button
           className="rounded-full w-10 h-10"

@@ -17,6 +17,7 @@ import Editor from '@/components/Editor'
 type DraftData = {
   id?: string;
   title: string;
+  subtitle: string;
   content: { content: string } | null;
   authorId?: string;
 }
@@ -28,7 +29,7 @@ type Author = {
 
 export const Draft = ({ draftId }: { draftId: string | null }) => {
   const { data: session } = useSession();
-  const [draft, setDraft] = useState<DraftData | null>(null);
+  const [draft, setDraft] = useState<DraftData | null>({ title: '', subtitle: '', content: null });
   const [originalDraft, setOriginalDraft] = useState<DraftData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -66,8 +67,8 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
             setDraft(response.data);
             setOriginalDraft(response.data);
             setInitialContent(response.data.content.content);
-            setInitialTitle(response.data.title);
-            setInitialSubtitle(response.data.subtitle);
+            setInitialTitle(response.data.title || '');
+            setInitialSubtitle(response.data.subtitle || '');
             setInitialAuthorId(response.data.authorId);
           } else {
             router.push('/');
@@ -210,6 +211,7 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
   };
 
   const isDraftChanged = useCallback(() => {
+    console.log(draft, originalDraft);
     return JSON.stringify(draft) !== JSON.stringify(originalDraft);
   }, [draft, originalDraft]);
 

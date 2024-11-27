@@ -37,6 +37,7 @@ export const Publication = ({ publicationId }: { publicationId: string | null })
   const [initialTitle, setInitialTitle] = useState<string>('');
   const [initialSubtitle, setInitialSubtitle] = useState<string>('');
   const [initialAuthorId, setInitialAuthorId] = useState<string | null>(null);
+  const [dateSigned, setDateSigned] = useState<string | null>(null);
 
   const setContent = (content: Object) => {}
 
@@ -55,10 +56,12 @@ export const Publication = ({ publicationId }: { publicationId: string | null })
           if (response.success) {
             setDraft(response.data);
             setOriginalDraft(response.data);
-            setInitialContent(response.data.content.content);
-            setInitialTitle(response.data.title);
-            setInitialSubtitle(response.data.subtitle);
-            setInitialAuthorId(response.data.authorId);
+            setInitialContent(response.data.publication_content.content);
+            setInitialTitle(response.data.publication_title);
+            setInitialSubtitle(response.data.publication_subtitle);
+            setInitialAuthorId(response.data.author_id_libro);
+            setAuthors([{ id: response.data.author_id_libro, name: response.data.author_name_libro }]);
+            setDateSigned(new Date(response.data.publication_date).toLocaleString());
           } else {
             router.push('/');
           }
@@ -84,6 +87,9 @@ export const Publication = ({ publicationId }: { publicationId: string | null })
   return (
     <div className="w-[90%] mx-auto space-y-4 py-4">
       {error && <div className="text-red-500">{error}</div>}
+      <div className="text-xs text-muted-foreground text-center">
+        Signed by {authors[0].name} on {dateSigned}. <br />Proof can be verified on Worldchain.
+      </div>
       <Editor authors={authors}
               initialContent={initialContent}
               initialTitle={initialTitle}

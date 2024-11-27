@@ -18,12 +18,9 @@ export const GET = async (
 
   try {
     const publicationResult = await client.query(
-      `SELECT p.title AS title,
-              p.content AS content,
-              a.name AS author_name
+      `SELECT p.signal
        FROM publications p 
-       JOIN authors a ON p."authorId" = a.id 
-       WHERE p.id = $1`,
+       WHERE p.id = $1::bigint`,
       [publicationId]
     );
 
@@ -36,7 +33,7 @@ export const GET = async (
 
     const publication = publicationResult.rows[0];
 
-    return NextResponse.json({ success: true, data: publication });
+    return NextResponse.json({ success: true, data: publication.signal });
   } finally {
     client.release();
   }
