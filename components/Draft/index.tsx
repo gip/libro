@@ -4,15 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { FeedItem } from '@/components/FeedItem'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue } from "@/components/ui/select"
 import {
   MiniKit,
   VerificationLevel,
@@ -43,6 +35,26 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
   const [isEditingDisabled, setIsEditingDisabled] = useState<boolean>(false);
   const router = useRouter();
   const [authors, setAuthors] = useState<Author[]>([]);
+  const [initialContent, setInitialContent] = useState<Object | null>(null);
+  const [initialTitle, setInitialTitle] = useState<string>('');
+  const [initialSubtitle, setInitialSubtitle] = useState<string>('');
+  const [initialAuthorId, setInitialAuthorId] = useState<string | null>(null);
+
+  const setContent = (content: Object) => {
+    setDraft((prevDraft) => prevDraft ? { ...prevDraft, content: { content } } as DraftData : null);
+  }
+
+  const setTitle = (title: string) => {
+    setDraft((prevDraft) => prevDraft ? { ...prevDraft, title } : null);
+  }
+
+  const setSubtitle = (subtitle: string) => {
+    setDraft((prevDraft) => prevDraft ? { ...prevDraft, subtitle } : null);
+  }
+
+  const setAuthorId = (authorId: string | null) => {
+    setDraft((prevDraft) => prevDraft ? { ...prevDraft, authorId } as DraftData : null);
+  }
 
   useEffect(() => {
     const fetchDraft = async () => {
@@ -53,6 +65,10 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
           if (response.success) {
             setDraft(response.data);
             setOriginalDraft(response.data);
+            setInitialContent(response.data.content.content);
+            setInitialTitle(response.data.title);
+            setInitialSubtitle(response.data.subtitle);
+            setInitialAuthorId(response.data.authorId);
           } else {
             router.push('/');
           }
@@ -204,39 +220,6 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
   return (
     <div className="w-[90%] mx-auto space-y-4 py-4">
       {error && <div className="text-red-500">{error}</div>}
-      <div className="flex items-center space-x-2">
-        <span>Author:</span>
-        <Select
-          value={draft?.authorId}
-          onValueChange={(value) => setDraft({ ...draft, authorId: value } as DraftData)}
-          disabled={isEditingDisabled}
-        >
-          <SelectTrigger className="max-w-[300px]">
-            <SelectValue placeholder="Select author" />
-          </SelectTrigger>
-          <SelectContent>
-            {authors.map((author) => (
-              <SelectItem key={author.id} value={author.id}>
-                {author.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <Input
-        value={draft?.title || ''}
-        onChange={(e) => setDraft({ ...draft, title: e.target.value } as DraftData)}
-        placeholder="Title"
-        className="w-full"
-        disabled={isEditingDisabled}
-      />
-      <Textarea
-        value={draft?.content?.content || ''}
-        onChange={(e) => setDraft({ ...draft, content: { content: e.target.value } } as DraftData)}
-        placeholder="Content"
-        className="w-full"
-        disabled={isEditingDisabled}
-      />
       <div className="flex space-x-2">
         <Button onClick={handleSave} disabled={!isDraftChanged() || isEditingDisabled}>Save</Button>
         {draftId && <Button onClick={handleDelete} variant="destructive" disabled={isEditingDisabled}>Delete</Button>}
@@ -249,7 +232,16 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
           </Button>
         )}
       </div>
-      <Editor authors={authors} />
+      <Editor authors={authors}
+              initialContent={initialContent}
+              initialTitle={initialTitle}
+              initialSubtitle={initialSubtitle}
+              initialAuthorId={initialAuthorId}
+              setContent={setContent}
+              setTitle={setTitle}
+              setSubtitle={setSubtitle}
+              setAuthorId={setAuthorId}
+              />
     </div>
   );
 }

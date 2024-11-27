@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
@@ -33,11 +33,30 @@ export type Author = {
   name: string;
 };
 
-export default function DocumentEditor({ authors }: { authors: Author[] }) {
-  const [title, setTitle] = useState('')
-  const [subtitle, setSubtitle] = useState('')
-  const [author, setAuthor] = useState<Author[]>([])
+export default function Editor({ authors, initialContent, setContent,
+  initialTitle, setTitle,
+  initialSubtitle, setSubtitle,
+  initialAuthorId, setAuthorId,
+  editable = true
+}: { authors: Author[], initialContent: Object | null, setContent: (content: Object) => void,
+  initialTitle: string, setTitle: (title: string) => void,
+  initialSubtitle: string, setSubtitle: (subtitle: string) => void,
+  initialAuthorId: string | null, setAuthorId: (authorId: string | null) => void,
+  editable?: boolean,
+ }) {
+  const [author, setLocalAuthor] = useState<Author[]>([])
   const [isAuthorDialogOpen, setIsAuthorDialogOpen] = useState(false)
+  const [title, setLocalTitle] = useState(initialTitle)
+  const [subtitle, setLocalSubtitle] = useState(initialSubtitle)
+
+  useEffect(() => {
+    if (initialAuthorId) {
+      const matchedAuthor = authors.find(author => author.id === initialAuthorId)
+      if (matchedAuthor) {
+        setLocalAuthor([matchedAuthor])
+      }
+    }
+  }, [initialAuthorId, authors])
 
   const editor = useEditor({
     extensions: [
@@ -49,11 +68,15 @@ export default function DocumentEditor({ authors }: { authors: Author[] }) {
         allowBase64: true,
       }),
       Placeholder.configure({
-        placeholder: 'Tell your story...',
+        placeholder: editable ? 'Tell your story...' : '',
       }),
     ],
-    content: '',
+    content: initialContent,
+    editable,
     immediatelyRender: false,
+    onUpdate: ({ editor }) => {
+      setContent(editor.getJSON())
+    }
   })
 
   const toggleFormat = (type: string) => {
@@ -81,176 +104,205 @@ export default function DocumentEditor({ authors }: { authors: Author[] }) {
   }
 
   const removeAuthor = (index: number) => {
-    setAuthor([])
+    setAuthorId(null)
+    setLocalAuthor([])
   }
 
   const addAuthor = (author: Author) => {
-    setAuthor([author])
+    setAuthorId(author.id)
+    setLocalAuthor([author])
     setIsAuthorDialogOpen(false)
   }
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 pt-20">
-      <div className="sticky top-0 z-50 bg-background flex justify-center">
-        <div className="flex items-center justify-between gap-2 pb-2">
-          <div className="flex items-center gap-1">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">
-                  Style
-                  <ChevronDown className="h-3 w-3 ml-1" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>Normal</DropdownMenuItem>
-                <DropdownMenuItem>Heading 1</DropdownMenuItem>
-                <DropdownMenuItem>Heading 2</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <div className="flex items-center gap-1 border-l border-r px-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => toggleFormat('bold')}
-                className={`h-7 w-7 p-0 ${editor?.isActive('bold') ? 'bg-muted' : ''}`}
-              >
-                <Bold className="h-3 w-3" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => toggleFormat('italic')}
-                className={`h-7 w-7 p-0 ${editor?.isActive('italic') ? 'bg-muted' : ''}`}
-              >
-                <Italic className="h-3 w-3" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => toggleFormat('strike')}
-                className={`h-7 w-7 p-0 ${editor?.isActive('strike') ? 'bg-muted' : ''}`}
-              >
-                <Strikethrough className="h-3 w-3" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => toggleFormat('quote')}
-                className={`h-7 w-7 p-0 ${editor?.isActive('blockquote') ? 'bg-muted' : ''}`}
-              >
-                <Quote className="h-3 w-3" />
-              </Button>
-            </div>
-
-            <div className="flex items-center gap-1 border-r px-2">
-              <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                <LinkIcon className="h-3 w-3" />
-              </Button>
-              <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                <ImageIcon className="h-3 w-3" />
-              </Button>
-            </div>
-
+      {editable && (
+        <div className="sticky top-0 z-50 bg-background flex justify-center">
+          <div className="flex items-center justify-between gap-2 pb-2">
             <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => toggleFormat('bullet-list')}
-                className={`h-7 w-7 p-0 ${editor?.isActive('bulletList') ? 'bg-muted' : ''}`}
-              >
-                <List className="h-3 w-3" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => toggleFormat('ordered-list')}
-                className={`h-7 w-7 p-0 ${editor?.isActive('orderedList') ? 'bg-muted' : ''}`}
-              >
-                <ListOrdered className="h-3 w-3" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">
+                    Style
+                    <ChevronDown className="h-3 w-3 ml-1" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>Normal</DropdownMenuItem>
+                  <DropdownMenuItem>Heading 1</DropdownMenuItem>
+                  <DropdownMenuItem>Heading 2</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <div className="flex items-center gap-1 border-l border-r px-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toggleFormat('bold')}
+                  className={`h-7 w-7 p-0 ${editor?.isActive('bold') ? 'bg-muted' : ''}`}
+                >
+                  <Bold className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toggleFormat('italic')}
+                  className={`h-7 w-7 p-0 ${editor?.isActive('italic') ? 'bg-muted' : ''}`}
+                >
+                  <Italic className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toggleFormat('strike')}
+                  className={`h-7 w-7 p-0 ${editor?.isActive('strike') ? 'bg-muted' : ''}`}
+                >
+                  <Strikethrough className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toggleFormat('quote')}
+                  className={`h-7 w-7 p-0 ${editor?.isActive('blockquote') ? 'bg-muted' : ''}`}
+                >
+                  <Quote className="h-3 w-3" />
+                </Button>
+              </div>
+
+              <div className="flex items-center gap-1 border-r px-2">
+                <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                  <LinkIcon className="h-3 w-3" />
+                </Button>
+                <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                  <ImageIcon className="h-3 w-3" />
+                </Button>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toggleFormat('bullet-list')}
+                  className={`h-7 w-7 p-0 ${editor?.isActive('bulletList') ? 'bg-muted' : ''}`}
+                >
+                  <List className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toggleFormat('ordered-list')}
+                  className={`h-7 w-7 p-0 ${editor?.isActive('orderedList') ? 'bg-muted' : ''}`}
+                >
+                  <ListOrdered className="h-3 w-3" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      <div className=".editable space-y-4">
+      <div className="space-y-4">
         <Input
           type="text"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) => {
+            setLocalTitle(e.target.value)
+            setTitle(e.target.value)
+          }}
           placeholder="Title"
           className="editor-input text-2xl sm:text-3xl md:text-4xl font-bold px-0 placeholder:text-muted-foreground/30"
+          readOnly={!editable}
         />
-        <Input
-          type="text"
-          value={subtitle}
-          onChange={(e) => setSubtitle(e.target.value)}
-          placeholder="Add a subtitle..."
-          className="editor-input text-lg sm:text-xl text-muted-foreground px-0 placeholder:text-muted-foreground/30"
-        />
+        {editable || subtitle ? (
+          <Input
+            type="text"
+            value={subtitle}
+            onChange={(e) => {
+              setLocalSubtitle(e.target.value)
+              setSubtitle(e.target.value)
+            }}
+            placeholder="Add a subtitle..."
+            className="editor-input text-lg sm:text-xl text-muted-foreground px-0 placeholder:text-muted-foreground/30"
+            readOnly={!editable}
+          />
+        ) : null}
 
-        <div className="flex flex-wrap items-center gap-2 mb-4 sm:mb-8 mt-2">
-          {author.map((author, index) => (
-            <div
-              key={index}
-              className="flex items-center gap-1 sm:gap-2 bg-muted rounded-full px-3 sm:px-5 py-2 text-sm bg-gray-100"
-            >
-              <span className="truncate max-w-[100px] sm:max-w-[150px]">{author.name}</span>
+        {editable ? (
+          <div className="flex flex-wrap items-center gap-2 mb-4 sm:mb-8 mt-2">
+            {author.map((author, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-1 sm:gap-2 bg-muted rounded-full px-3 sm:px-5 py-2 text-sm bg-gray-100"
+              >
+                <span className="truncate max-w-[100px] sm:max-w-[150px]">{author.name}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-5 w-5 hover:bg-gray-200"
+                  onClick={() => removeAuthor(index)}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            ))}
+            {author.length > 0 && (
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-5 w-5 hover:bg-gray-200"
-                onClick={() => removeAuthor(index)}
+                className="h-5 w-5 rounded-full"
+                disabled
               >
-                <X className="h-3 w-3" />
+                <Plus className="h-3 w-3" />
               </Button>
-            </div>
-          ))}
-          {author.length > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-5 w-5 rounded-full"
-              disabled
-            >
-              <Plus className="h-3 w-3" />
-            </Button>
-          )}
-          {author.length === 0 && (
-            <Dialog open={isAuthorDialogOpen} onOpenChange={setIsAuthorDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="bg-gray-100 hover:bg-gray-200 rounded-full text-sm py-2 px-3"
-                >
-                  Choose Author +
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle className="text-lg font-semibold mb-4">Select Author</DialogTitle>
-                </DialogHeader>
-                <Card>
-                  <CardContent className="grid gap-4 py-4">
-                    {authors.map((author) => (
-                      <Button
-                        key={author.id}
-                        variant="ghost"
-                        onClick={() => addAuthor(author)}
-                        className="bg-gray-100 rounded-full py-2 px-3"
-                      >
-                        {author.name}
-                      </Button>
-                    ))}
-                  </CardContent>
-                </Card>
-              </DialogContent>
-            </Dialog>
-          )}
-        </div>
+            )}
+            {author.length === 0 && (
+              <Dialog open={isAuthorDialogOpen} onOpenChange={setIsAuthorDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="bg-gray-100 hover:bg-gray-200 rounded-full text-sm py-2 px-3"
+                  >
+                    Choose Author +
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle className="text-lg font-semibold mb-4">Select Author</DialogTitle>
+                  </DialogHeader>
+                  <Card>
+                    <CardContent className="grid gap-4 py-4">
+                      {authors.map((author) => (
+                        <Button
+                          key={author.id}
+                          variant="ghost"
+                          onClick={() => addAuthor(author)}
+                          className="bg-gray-100 rounded-full py-2 px-3"
+                        >
+                          {author.name}
+                        </Button>
+                      ))}
+                    </CardContent>
+                  </Card>
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
+        ) : (
+          <div className="flex flex-wrap items-center gap-2 mb-4 sm:mb-8 mt-2">
+            {author.map((author, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-1 sm:gap-2 bg-muted rounded-full px-3 sm:px-5 py-2 text-sm bg-gray-100"
+              >
+                <span className="truncate max-w-[100px] sm:max-w-[150px]">{author.name}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
-        <EditorContent editor={editor} />
+        <div className="editable text-xl">
+          <EditorContent editor={editor} />
+        </div>
       </div>
     </div>
   )
