@@ -61,7 +61,7 @@ export async function PUT(req: NextRequest, context: { params: Promise<{ draftId
 
   const { user } = session;
   const { draftId } = await context.params;
-  const { id, status, title, content, history, authorId } = await req.json();
+  const { id, status, title, subtitle, content, history, authorId } = await req.json();
 
   if (draftId !== id) {
     return NextResponse.json({ success: false, message: "Draft ID mismatch" }, { status: 400 });
@@ -92,10 +92,10 @@ export async function PUT(req: NextRequest, context: { params: Promise<{ draftId
 
     const draftResult = await client.query(
       `UPDATE drafts 
-       SET status = $1, title = $2, content = $3, history = $4, "authorId" = $5 
-       WHERE id = $6 AND "userId" = $7 AND status = $8 
+       SET status = $1, title = $2, subtitle = $3, content = $4, history = $5, "authorId" = $6 
+       WHERE id = $7 AND "userId" = $8 AND status = $9 
        RETURNING *`,
-      [status, title, content, history, authorId, id, userId, 'editing']
+      [status, title, subtitle, content, history, authorId, id, userId, 'editing']
     );
 
     if (draftResult.rows.length === 0) {

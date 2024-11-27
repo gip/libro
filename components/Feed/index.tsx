@@ -10,6 +10,7 @@ import { Plus } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { FeedItemD } from '@/components/FeedItem'
 import { FeedItem } from '@/components/FeedItem'
+import { Diamond } from '@/components/Diamond'
 
 type FeedStatus = 'loading' | 'ready'
 
@@ -51,15 +52,6 @@ export const Top = () => {
     </div>
   )
 
-  const addNewItem = () => {
-    const newItem: FeedItemD = {
-      id: (feedItems.length + 1).toString(),
-      title: `New Post ${feedItems.length + 1}`,
-      content: { content: "This is a new post that was just added. It also contains three lines of text like the others." }
-    }
-    setFeedItems([...feedItems, newItem])
-  }  
-
   return (
     <>      
       <div className="mt-14 min-h-[calc(100vh-3.5rem)]">
@@ -70,15 +62,7 @@ export const Top = () => {
             <FeedContent />}
         </main>
         <Separator className="my-4" />
-
-        <Button
-          onClick={addNewItem}
-          className="fixed bottom-4 right-4 rounded-full w-10 h-10"
-          size="icon"
-        >
-          <Plus className="h-4 w-4" />
-          <span className="sr-only">Add new item</span>
-        </Button>
+        <Diamond />
       </div>
     </>
   )
