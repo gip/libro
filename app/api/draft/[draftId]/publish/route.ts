@@ -24,7 +24,7 @@ export async function PUT(
   }
 
   const { publication, verification } = fullPayload;
-  const { publication_title, publication_content, publication_date, author_id_libro } = publication;
+  const { publication_title, publication_subtitle, publication_content, publication_date, author_id_libro } = publication;
 
   const signal = sortAndStringifyJson(publication);
 
@@ -75,9 +75,19 @@ export async function PUT(
 
   const draft = draftResult.rows[0];
 
-  // Check that the title and content are similar to what is in the DB
-  if (draft.title !== publication_title || !isJsonEqual(draft.content, publication_content)) {
-    return NextResponse.json({ success: false, message: "Title or content does not match the draft" }, { status: 400 });
+  console.log('SUB', draft.subtitle, publication_subtitle);
+  // Consolidated check for title, subtitle, and content
+  if (
+    draft.title !== publication_title || 
+    draft.subtitle !== publication_subtitle || 
+    !isJsonEqual(draft.content, publication_content)
+  ) {
+    return NextResponse.json({ success: false, message: "Title, subtitle, or content does not match the draft" }, { status: 400 });
+  }
+
+  // Check that the title is more than 5 characters
+  if (publication_title.length < 5) {
+    return NextResponse.json({ success: false, message: "Title is too short" }, { status: 400 });
   }
 
   // Check that the date is not in the future and not 5 mins older than the current date and time
@@ -105,8 +115,8 @@ export async function PUT(
     const version = '1';
     // Create article
     const articleResult = await client.query(
-      'INSERT INTO publications ("userId", "authorId", proof, signal, title, content, version) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [userId, author_id_libro, proof, signal, draft.title, draft.content, version]
+      'INSERT INTO publications ("userId", "authorId", proof, signal, content, version) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
+      [userId, author_id_libro, proof, signal, draft.content, version]
     );
 
     // Update draft status to published
@@ -120,7 +130,7 @@ export async function PUT(
 
     return NextResponse.json({ 
       success: true, 
-      document: articleResult.rows[0]
+      publicationId: articleResult.rows[0].id
     });
   } catch (error) {
     // Rollback in case of error

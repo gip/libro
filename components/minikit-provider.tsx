@@ -7,7 +7,7 @@ export default function MiniKitProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const init = async () => {
-        const r = MiniKit.install('app_59c12ce689127aa7e62a6a223522755a');
+        const r = MiniKit.install(process.env.NEXT_PUBLIC_WLD_CLIENT_ID);
     };
 
     init();

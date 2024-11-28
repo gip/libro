@@ -3,17 +3,13 @@
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Button } from "@/components/ui/button"
-import { Plus } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
 import type { FeedItemD } from '@/components/FeedItem'
 import { FeedItem } from '@/components/FeedItem'
 
 type FeedStatus = 'loading' | 'ready'
 
-export const Top = () => {
+export const Feed = () => {
   const { data: session, status } = useSession(); 
   const [feedStatus, setFeedStatus] = useState<FeedStatus>('loading')
   const [feedItems, setFeedItems] = useState<FeedItemD[]>([])
@@ -51,34 +47,19 @@ export const Top = () => {
     </div>
   )
 
-  const addNewItem = () => {
-    const newItem: FeedItemD = {
-      id: (feedItems.length + 1).toString(),
-      title: `New Post ${feedItems.length + 1}`,
-      content: { content: "This is a new post that was just added. It also contains three lines of text like the others." }
-    }
-    setFeedItems([...feedItems, newItem])
-  }  
-
   return (
     <>      
-      <div className="mt-14 min-h-[calc(100vh-3.5rem)]">
+      <div className="mt-4 min-h-[calc(100vh-3.5rem)]">
         <main className="w-full">
+          <div className="text-left p-4">
+            <h2 className="text-2xl font-bold">Drafts</h2>
+          </div>
           {feedStatus === 'loading' &&
               <FeedLoading />}
           {feedStatus === 'ready' &&
             <FeedContent />}
         </main>
         <Separator className="my-4" />
-
-        <Button
-          onClick={addNewItem}
-          className="fixed bottom-4 right-4 rounded-full w-10 h-10"
-          size="icon"
-        >
-          <Plus className="h-4 w-4" />
-          <span className="sr-only">Add new item</span>
-        </Button>
       </div>
     </>
   )
