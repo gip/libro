@@ -19,10 +19,10 @@ const PrivacyPage = () => {
             <h2 className="text-xl font-semibold mb-3">2. Information We Collect</h2>
             <p>We collect and store:</p>
             <ul className="list-disc ml-6 mt-2">
-              <li>Your chosen username</li>
-              <li>Email address (encrypted)</li>
-              <li>Content you create and share</li>
-              <li>Basic usage analytics</li>
+              <li>An anonymous username that is application-specific and cannot be traced back to you</li>
+              <li>Optionally, an email address for account recovery and important updates</li>
+              <li>Content you create and share on the platform</li>
+              <li>Basic usage analytics (such as page views and feature usage)</li>
             </ul>
           </div>
   
@@ -32,7 +32,7 @@ const PrivacyPage = () => {
             <ul className="list-disc ml-6 mt-2">
               <li>Maintain and secure your account</li>
               <li>Display your creative works</li>
-              <li>Send essential service updates</li>
+              <li>Share essential service updates</li>
               <li>Improve platform functionality</li>
             </ul>
           </div>
@@ -41,7 +41,7 @@ const PrivacyPage = () => {
             <h2 className="text-xl font-semibold mb-3">4. Data Protection</h2>
             <p>
               We implement industry-standard security measures to protect your data.
-              Your email address is encrypted, and we never share your personal information with third parties
+              If you decide to share it with us, your email address is encrypted, and we never share your personal information with third parties
               without your explicit consent.
             </p>
           </div>
@@ -66,7 +66,7 @@ const PrivacyPage = () => {
           </div>
         </section>
       </main>
-    </>);
-  };
+    </>)
+  }
   
   export default PrivacyPage

@@ -18,7 +18,7 @@ const TermsPage = () => {
         <div>
           <h2 className="text-xl font-semibold mb-3">2. User Accounts</h2>
           <ul className="list-disc ml-6 mt-2">
-            <li>You must be at least 13 years old to use this service</li>
+            <li>You must be at least 18 years old to use this service</li>
             <li>You are responsible for maintaining the security of your account</li>
             <li>One person or entity may only maintain one account</li>
             <li>You may not share your account credentials with others</li>
@@ -76,7 +76,8 @@ const TermsPage = () => {
           <h2 className="text-xl font-semibold mb-3">8. Changes to Terms</h2>
           <p>
             We may modify these terms at any time. Continued use of the platform after changes 
-            constitutes acceptance of the new terms. Major changes will be announced to users.
+            constitutes acceptance of the new terms. Major changes will be announced to users through
+            a notice on the homepage.
           </p>
         </div>
       </section>
