@@ -1,42 +1,8 @@
-import { cache, Suspense } from 'react'
+import { Suspense } from 'react'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { Publication } from '@/components/Publication'
-import { pool } from '@/lib/db'
-
-
-type Publication = {
-  author_id_libro: string;
-  publication_date: string;
-  author_name_libro: string;
-  publication_title: string;
-  publication_content: {
-    content: {
-      type: string;
-      content: Array<any>;
-    }
-  };
-  publication_subtitle: string;
-}
-
-const getPublication = cache(async (publicationId: string): Promise<Publication | null> => {
-  const client = await pool.connect()
-  
-  try {
-    const { rows } = await client.query(
-      'SELECT signal FROM publications WHERE id = $1',
-      [publicationId]
-    );
-
-    if (rows.length === 0) {
-      return null
-    }
-
-    return rows[0].signal;
-  } finally {
-    client.release()
-  }
-})
+import { getPublication } from './layout'
 
 type Params = Promise<{ publicationId: string }>
 
@@ -48,11 +14,11 @@ const Page = async ({ params }: { params: Params }) => {
   return (<>
     <Header />
     <Suspense fallback={<div>Loading...</div>}>
-      {publication && <Publication publication={publication} />}
+      {publication && <Publication publication={publication} proofLink={`/p/${publicationId}/proof`} />}
       {!publication && <div>Publication not found</div>}
     </Suspense>
     <Footer />
   </>)
 }
 
-export default Page 
+export default Page
