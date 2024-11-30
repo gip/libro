@@ -1,8 +1,9 @@
-import { Footer } from '@/components/Footer';
+import { cache, Suspense } from 'react'
+import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { Publication } from '@/components/Publication'
-import { pool } from '@/lib/db';
-import { Suspense } from 'react';
+import { pool } from '@/lib/db'
+
 
 type Publication = {
   author_id_libro: string;
@@ -18,8 +19,8 @@ type Publication = {
   publication_subtitle: string;
 }
 
-const getPublication = async (publicationId: string): Promise<Publication | null> => {
-  const client = await pool.connect();
+const getPublication = cache(async (publicationId: string): Promise<Publication | null> => {
+  const client = await pool.connect()
   
   try {
     const { rows } = await client.query(
@@ -28,21 +29,21 @@ const getPublication = async (publicationId: string): Promise<Publication | null
     );
 
     if (rows.length === 0) {
-      return null;
+      return null
     }
 
     return rows[0].signal;
   } finally {
-    client.release();
+    client.release()
   }
-}
+})
 
 type Params = Promise<{ publicationId: string }>
 
 const Page = async ({ params }: { params: Params }) => {
 
-  const { publicationId } = await params;
-  const publication = await getPublication(publicationId);
+  const { publicationId } = await params
+  const publication = await getPublication(publicationId)
 
   return (<>
     <Header />
