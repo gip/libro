@@ -1,5 +1,6 @@
 import { Header } from '@/components/Header'
 import { Draft } from '@/components/Draft'
+import { Footer } from '@/components/Footer';
 
 const Page = async ({ params }: { params: Promise<{ draftId: string }> }) => {
   const resolvedParams = await params;
@@ -8,6 +9,7 @@ const Page = async ({ params }: { params: Promise<{ draftId: string }> }) => {
   return (<>
     <Header />
     <Draft draftId={draftIdParam} />
+    <Footer />
   </>)
 }
 

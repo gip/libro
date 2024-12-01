@@ -56,8 +56,8 @@ export const Author = ({ authorId }: { authorId: string | null }) => {
 
   const handleSave = async () => {
     try {
-      const method = authorId ? 'PUT' : 'POST';
-      const raw = await fetch(`/api/author/${authorId || ''}`, {
+      const method = 'POST';
+      const raw = await fetch(`/api/author/`, {
         method,
         headers: {
           'Content-Type': 'application/json',
@@ -67,29 +67,13 @@ export const Author = ({ authorId }: { authorId: string | null }) => {
       const response = await raw.json();
       if (response.success) {
         setOriginalAuthor(author);
-        if (!authorId && response.author?.id) {
+        if (response.author?.id) {
           router.replace(`/a/${response.author.id}`);
         }
       }
     } catch (error) {
       console.error('Failed to save author:', error);
       setError('Failed to save author');
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!authorId) return;
-    try {
-      const raw = await fetch(`/api/author/${authorId}`, {
-        method: 'DELETE',
-      });
-      const response = await raw.json();
-      if (response.success) {
-        router.push('/authors');
-      }
-    } catch (error) {
-      console.error('Failed to delete author:', error);
-      setError('Failed to delete author');
     }
   };
 
@@ -109,6 +93,33 @@ export const Author = ({ authorId }: { authorId: string | null }) => {
     return <div>Please log in</div>;
   }
 
+  if (authorId && author) {
+    return (
+      <div className="w-[90%] mx-auto space-y-8 py-8">
+        <div className="space-y-4">
+          <div>
+            <span className="text-base">Author: </span>
+            <span className="text-2xl">{author.name}</span>
+          </div>
+          <div>
+            <span className="text-base">Bio: </span>
+            <span className="text-2xl">{author.bio}</span>
+          </div>
+          <div>
+            <span className="text-base">Avatar: </span>
+            <span className="text-2xl">{author.avatar_url}</span>
+          </div>
+          <div>
+            <span className="text-base">Author URL: </span>
+            <a href={`${process.env.NEXT_PUBLIC_APP_URL}/a/${authorId}`} className="text-sm text-blue-500 hover:underline">
+              {`${process.env.NEXT_PUBLIC_APP_URL}/a/${authorId}`}
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-[90%] mx-auto space-y-4 py-4">
       {error && <div className="text-red-500">{error}</div>}
@@ -117,26 +128,25 @@ export const Author = ({ authorId }: { authorId: string | null }) => {
         onChange={(e) => setAuthor({ ...author, name: e.target.value } as AuthorData)}
         placeholder="Name"
         className="w-full"
-        disabled={!isSelf}
+        disabled={!!authorId}
       />
       <Textarea
         value={author?.bio || ''}
         onChange={(e) => setAuthor({ ...author, bio: e.target.value } as AuthorData)}
         placeholder="Bio"
         className="w-full"
-        disabled={!isSelf}
+        disabled={!!authorId}
       />
       <Input
         value={author?.avatar_url || ''}
         onChange={(e) => setAuthor({ ...author, avatar_url: e.target.value } as AuthorData)}
         placeholder="Avatar URL"
         className="w-full"
-        disabled={!isSelf}
+        disabled={!!authorId}
       />
-      {isSelf && (
+      {!authorId && isSelf && (
         <div className="flex space-x-2">
           <Button onClick={handleSave} disabled={!isAuthorChanged()}>Save</Button>
-          {authorId && <Button onClick={handleDelete} variant="destructive">Delete</Button>}
         </div>
       )}
     </div>

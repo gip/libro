@@ -33,17 +33,29 @@ export type Author = {
   name: string;
 };
 
-export default function Editor({ authors, initialContent, setContent,
-  initialTitle, setTitle,
-  initialSubtitle, setSubtitle,
-  initialAuthorId, setAuthorId,
+export default function Editor({ 
+  authors, 
+  initialContent, 
+  setContent = () => {},
+  initialTitle, 
+  setTitle = () => {},
+  initialSubtitle, 
+  setSubtitle = () => {},
+  initialAuthorId, 
+  setAuthorId = () => {},
   editable = true
-}: { authors: Author[], initialContent: Object | null, setContent: (content: Object) => void,
-  initialTitle: string, setTitle: (title: string) => void,
-  initialSubtitle: string, setSubtitle: (subtitle: string) => void,
-  initialAuthorId: string | null, setAuthorId: (authorId: string | null) => void,
+}: { 
+  authors: Author[], 
+  initialContent: Object | null, 
+  setContent?: (content: Object) => void,
+  initialTitle: string, 
+  setTitle?: (title: string) => void,
+  initialSubtitle: string, 
+  setSubtitle?: (subtitle: string) => void,
+  initialAuthorId: string | null, 
+  setAuthorId?: (authorId: string | null) => void,
   editable?: boolean,
- }) {
+}) {
   const [author, setLocalAuthor] = useState<Author[]>([])
   const [isAuthorDialogOpen, setIsAuthorDialogOpen] = useState(false)
   const [title, setLocalTitle] = useState(initialTitle)
