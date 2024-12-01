@@ -1,4 +1,5 @@
 import { getPublication } from '@/lib/db/publication'
+import { notFound } from 'next/navigation'
 
 type Params = Promise<{ publicationId: string }>
 
@@ -11,5 +12,8 @@ export default async function Layout({
   }) {
     const { publicationId } = await params
     const publication = await getPublication(publicationId)
+    if (!publication) {
+      notFound()
+    }
     return children
   }
