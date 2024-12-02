@@ -1,6 +1,11 @@
 import { pool } from './index'
 import { cache } from 'react'
 
+export type Author = {
+    id: string;
+    name: string;
+  }
+
 export type Publication = {
   author_id_libro: string;
   publication_date: string;
@@ -13,6 +18,13 @@ export type Publication = {
     }
   };
   publication_subtitle: string;
+}
+
+export type Proof = {
+  proof: string;
+  merkle_root: string;
+  nullifier_hash: string;
+  verification_level: 'orb';
 }
 
 export const getPublication = cache(async (publicationId: string): Promise<Publication | null> => {
@@ -33,3 +45,22 @@ export const getPublication = cache(async (publicationId: string): Promise<Publi
     client.release()
   }
 })
+
+export const getProof = cache(async (publicationId: string): Promise<Proof | null> => {
+    const client = await pool.connect()
+    console.log('LOB', publicationId)
+    try {
+      const { rows } = await client.query(
+        'SELECT proof FROM publications WHERE id = $1',
+        [publicationId]
+      );
+  
+      if (rows.length === 0) {
+        return null
+      }
+  
+      return rows[0].proof;
+    } finally {
+      client.release()
+    }
+  })

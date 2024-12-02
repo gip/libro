@@ -15,7 +15,6 @@ const Page = async ({ params }: { params: Params }) => {
     <Header />
     <Suspense fallback={<div>Loading...</div>}>
       {publication && <Publication publication={publication} proofLink={`/p/${publicationId}/proof`} />}
-      {!publication && <div>Publication not found</div>}
     </Suspense>
     <Footer />
   </>)

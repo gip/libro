@@ -11,20 +11,15 @@ import {
   VerifyCommandInput
 } from "@worldcoin/minikit-js"
 import { JsonValue, sortAndStringifyJson } from '@/lib/json'
+import { Author } from '@/lib/db/publication'
 import Editor from '@/components/Editor'
-
 
 type DraftData = {
   id?: string;
   title: string;
   subtitle: string;
-  content: { content: string } | null;
+  content: { html: string } | null;
   authorId?: string;
-}
-
-type Author = {
-  id: string;
-  name: string;
 }
 
 export const Draft = ({ draftId }: { draftId: string | null }) => {
@@ -41,8 +36,8 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
   const [initialSubtitle, setInitialSubtitle] = useState<string>('');
   const [initialAuthorId, setInitialAuthorId] = useState<string | null>(null);
 
-  const setContent = (content: Object) => {
-    setDraft((prevDraft) => prevDraft ? { ...prevDraft, content: { content } } as DraftData : null);
+  const setContent = ({ html }: { html: string }) => {
+    setDraft((prevDraft) => prevDraft ? { ...prevDraft, content: { html } } as DraftData : null);
   }
 
   const setTitle = (title: string) => {
@@ -66,7 +61,7 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
           if (response.success) {
             setDraft(response.data);
             setOriginalDraft(response.data);
-            setInitialContent(response.data.content.content);
+            setInitialContent(response.data.content.html);
             setInitialTitle(response.data.title || '');
             setInitialSubtitle(response.data.subtitle || '');
             setInitialAuthorId(response.data.authorId);

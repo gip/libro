@@ -47,7 +47,7 @@ export default function Editor({
 }: { 
   authors: Author[], 
   initialContent: Object | null, 
-  setContent?: (content: Object) => void,
+  setContent?: (content: { html: string }) => void,
   initialTitle: string, 
   setTitle?: (title: string) => void,
   initialSubtitle: string, 
@@ -87,7 +87,7 @@ export default function Editor({
     editable,
     immediatelyRender: false,
     onUpdate: ({ editor }) => {
-      setContent(editor.getJSON())
+      setContent({ html: editor.getHTML() })
     }
   })
 
