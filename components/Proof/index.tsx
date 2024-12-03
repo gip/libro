@@ -8,9 +8,10 @@ export const Proof = ({ publication, proof }: { publication: PublicationType, pr
 
   const title = 'Independent Verification of Human Authorship'
 
-  const contentRaw = `This document will show how to independently verify the proof of authorship of the publication '${publication.publication_title}' by <a href="${process.env.NEXT_PUBLIC_APP_URL}/a/${publication.author_id_libro}">${publication.author_name_libro}</a>.
+  const contentRaw = `This document will show how to independently verify the proof of authorship of the publication <i><b>${publication.publication_title}</b></i> authored by <a href="${process.env.NEXT_PUBLIC_APP_URL}/a/${publication.author_id_libro}">${publication.author_name_libro}</a>.
 <br/>
 <br/>In a zero-knowledge world, the proof of authorship should always be verifiable by external parties. In the longer term, it should be possible for any agent or consumer of content to verify the proof of Human Authorship (HA) and trust the content without relying on Libro or even World's zero-knowledge infrastructure.
+<br/>
 <br/>As a first step, we provide a way to independently verify the proof of authorship using World's zero-knowledge infrastructure. In the future, we plan to support our own independent implementation of proof verification as well.
 <br/>
 <br/>Below is a step-by-step guide to verify the proof of authorship of the publication using Node.js. There are two external dependencies:
