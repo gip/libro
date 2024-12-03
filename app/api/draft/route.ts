@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { user } = session;
-  const { status, title, subtitle, content, history } = await req.json();
+  const { status, title, subtitle, content, history, authorId } = await req.json();
 
   if (!user || !user.name) {
     return NextResponse.json({ success: false, message: "Invalid user" }, { status: 401 });
@@ -30,8 +30,8 @@ export async function POST(req: NextRequest) {
     const history0 = history || { history: null };
 
     const draftResult = await client.query(
-      'INSERT INTO drafts ("userId", status, title, subtitle, content, history) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [userId, 'editing', title, subtitle, content, history0]
+      'INSERT INTO drafts ("userId", status, title, subtitle, content, history, "authorId") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [userId, 'editing', title, subtitle, content, history0, authorId]
     );
 
     const draft = draftResult.rows[0];

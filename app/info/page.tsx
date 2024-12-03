@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { Header } from '@/components/Header'
 import { Diamond } from '@/components/Diamond'
+import { Divider } from '@/components/Divider'
 
 const Home = () => {
   const { data: session, status } = useSession()
@@ -29,7 +30,12 @@ const Home = () => {
         This unique ID is the only information we store about you.
         It is application-specific and cannot be traced.
       </p>
+      <Divider />
       <Diamond />
+      <div className="flex justify-center space-x-12 mt-4">
+        <a href="/terms" className="text-blue-500 hover:underline">Terms of Use</a>
+        <a href="/privacy" className="text-blue-500 hover:underline">Privacy Policy</a>
+      </div>
     </div>
   </>);
 }
