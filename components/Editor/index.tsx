@@ -52,7 +52,8 @@ export default function Editor({
   setSubtitle = () => {},
   initialAuthorId, 
   setAuthorId = () => {},
-  editable = true
+  editable = true,
+  codeBlocks = false
 }: { 
   authors: Author[], 
   initialContent: Object | null, 
@@ -64,6 +65,7 @@ export default function Editor({
   initialAuthorId: string | null, 
   setAuthorId?: (authorId: string | null) => void,
   editable?: boolean,
+  codeBlocks?: boolean
 }) {
   const [author, setLocalAuthor] = useState<Author[]>([])
   const [isAuthorDialogOpen, setIsAuthorDialogOpen] = useState(false)
@@ -91,9 +93,9 @@ export default function Editor({
       Placeholder.configure({
         placeholder: editable ? 'Tell your story...' : '',
       }),
-      CodeBlockLowlight.configure({
+      ...(codeBlocks ? [CodeBlockLowlight.configure({
         lowlight: lowlight,
-      }),
+      })] : []),
     ],
     content: initialContent,
     editable,
