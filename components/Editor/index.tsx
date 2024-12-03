@@ -6,6 +6,9 @@ import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import js from 'highlight.js/lib/languages/javascript'
+import ts from 'highlight.js/lib/languages/typescript'
 import { Button } from '@/components/ui/button'
 import { Input } from "@/components/ui/input"
 import { Bold, Italic, Strikethrough, Quote, LinkIcon, ImageIcon, List, ListOrdered, ChevronDown, X, Plus } from 'lucide-react'
@@ -32,6 +35,12 @@ export type Author = {
   id: string;
   name: string;
 };
+import { all, createLowlight } from 'lowlight'
+
+const lowlight = createLowlight(all)
+lowlight.register('js', js)
+lowlight.register('ts', ts)
+
 
 export default function Editor({ 
   authors, 
@@ -81,6 +90,9 @@ export default function Editor({
       }),
       Placeholder.configure({
         placeholder: editable ? 'Tell your story...' : '',
+      }),
+      CodeBlockLowlight.configure({
+        lowlight: lowlight,
       }),
     ],
     content: initialContent,

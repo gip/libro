@@ -6,17 +6,21 @@ export type Author = {
     name: string;
   }
 
+type ContentOrHtml = {
+  content: {
+    type: string;
+    content: Array<any>;
+  }
+} | {
+  html: string;
+}
+
 export type Publication = {
   author_id_libro: string;
   publication_date: string;
   author_name_libro: string;
   publication_title: string;
-  publication_content: {
-    content: {
-      type: string;
-      content: Array<any>;
-    }
-  };
+  publication_content: ContentOrHtml;
   publication_subtitle: string;
 }
 

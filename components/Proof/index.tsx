@@ -61,7 +61,6 @@ export const Proof = ({ publication, proof }: { publication: PublicationType, pr
 <br>console.log(json);
 `
 
-
   const content = contentRaw.replace(/\n/g, '')
 
   return (

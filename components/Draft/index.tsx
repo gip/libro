@@ -147,14 +147,14 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
       const publicatonPayload: Record<string, JsonValue> = {
         author_id_libro: author.id,
         author_name_libro: author.name,
-        publication_content: draft.content,
         publication_title: draft.title,
         publication_subtitle: draft.subtitle,
+        publication_content: draft.content,
         publication_date: new Date().toISOString(),
       };
       const verifyPayload: VerifyCommandInput = {
         action,
-        signal: sortAndStringifyJson(publicatonPayload),
+        signal: JSON.stringify(publicatonPayload),
         verification_level: VerificationLevel.Orb,
       };
       const { finalPayload } = await MiniKit.commandsAsync.verify(verifyPayload);
