@@ -26,7 +26,7 @@ export async function PUT(
   const { publication, verification } = fullPayload;
   const { publication_title, publication_subtitle, publication_content, publication_date, author_id_libro } = publication;
 
-  const signal = sortAndStringifyJson(publication);
+  const signal = JSON.stringify(publication);
 
   console.log('Signal', signal);
 

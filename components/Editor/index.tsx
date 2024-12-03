@@ -6,6 +6,9 @@ import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import js from 'highlight.js/lib/languages/javascript'
+import ts from 'highlight.js/lib/languages/typescript'
 import { Button } from '@/components/ui/button'
 import { Input } from "@/components/ui/input"
 import { Bold, Italic, Strikethrough, Quote, LinkIcon, ImageIcon, List, ListOrdered, ChevronDown, X, Plus } from 'lucide-react'
@@ -32,18 +35,38 @@ export type Author = {
   id: string;
   name: string;
 };
+import { all, createLowlight } from 'lowlight'
 
-export default function Editor({ authors, initialContent, setContent,
-  initialTitle, setTitle,
-  initialSubtitle, setSubtitle,
-  initialAuthorId, setAuthorId,
-  editable = true
-}: { authors: Author[], initialContent: Object | null, setContent: (content: Object) => void,
-  initialTitle: string, setTitle: (title: string) => void,
-  initialSubtitle: string, setSubtitle: (subtitle: string) => void,
-  initialAuthorId: string | null, setAuthorId: (authorId: string | null) => void,
+const lowlight = createLowlight(all)
+lowlight.register('js', js)
+lowlight.register('ts', ts)
+
+
+export default function Editor({ 
+  authors, 
+  initialContent, 
+  setContent = () => {},
+  initialTitle, 
+  setTitle = () => {},
+  initialSubtitle, 
+  setSubtitle = () => {},
+  initialAuthorId, 
+  setAuthorId = () => {},
+  editable = true,
+  codeBlocks = false
+}: { 
+  authors: Author[], 
+  initialContent: Object | null, 
+  setContent?: (content: { html: string }) => void,
+  initialTitle: string, 
+  setTitle?: (title: string) => void,
+  initialSubtitle: string, 
+  setSubtitle?: (subtitle: string) => void,
+  initialAuthorId: string | null, 
+  setAuthorId?: (authorId: string | null) => void,
   editable?: boolean,
- }) {
+  codeBlocks?: boolean
+}) {
   const [author, setLocalAuthor] = useState<Author[]>([])
   const [isAuthorDialogOpen, setIsAuthorDialogOpen] = useState(false)
   const [title, setLocalTitle] = useState(initialTitle)
@@ -70,12 +93,15 @@ export default function Editor({ authors, initialContent, setContent,
       Placeholder.configure({
         placeholder: editable ? 'Tell your story...' : '',
       }),
+      ...(codeBlocks ? [CodeBlockLowlight.configure({
+        lowlight: lowlight,
+      })] : []),
     ],
     content: initialContent,
     editable,
     immediatelyRender: false,
     onUpdate: ({ editor }) => {
-      setContent(editor.getJSON())
+      setContent({ html: editor.getHTML() })
     }
   })
 
