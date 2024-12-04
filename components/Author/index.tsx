@@ -6,9 +6,10 @@ import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { type Author as AuthorType } from '@/lib/db/objects'
+import { type Author as AuthorType, type PublicationInfo } from '@/lib/db/objects'
+import Link from 'next/link'
 
-export const Author = ({ create, author, publicationIds }: { create: boolean, author: AuthorType | null, publicationIds: string[] }) => {
+export const Author = ({ create, author, publicationInfos }: { create: boolean, author: AuthorType | null, publicationInfos: PublicationInfo[] }) => {
   const { data: session, status } = useSession()
   const [newAuthor, setNewAuthor] = useState<Omit<AuthorType, 'id'>>({ 
     name: '',
@@ -63,10 +64,31 @@ export const Author = ({ create, author, publicationIds }: { create: boolean, au
         </div>
         <div className="space-y-4">
           <div className="text-sm text-muted-foreground">
-            This author has {publicationIds.length} publication{publicationIds.length !== 1 ? 's' : ''}
+            {publicationInfos.length === 0 && "This author has not published yet"}
+            {publicationInfos.length > 0 && publicationInfos.length <= 20 && 
+              `This author has ${publicationInfos.length} publication${publicationInfos.length !== 1 ? 's:' : '.'}`
+            }
+            {publicationInfos.length > 20 && "This author has 20+ publications:"}
+          </div>
+          </div>
+          <div className="space-y-4">
+            {publicationInfos.slice(0, 20).map(publicationInfo => (
+              <Link href={`/p/${publicationInfo.id}`} key={publicationInfo.id}>
+                <div className="flex items-center gap-2">
+                  <span>
+                    <span className="italic underline hover:text-blue-500">{publicationInfo.publication_title}</span>
+                    <br/>
+                    <span className="text-xs">{new Date(publicationInfo.publication_date).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric', 
+                      year: 'numeric'
+                    })}</span>
+                  </span>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
-      </div>
     </>)
   }
 

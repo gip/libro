@@ -25,6 +25,15 @@ export type Publication = {
   publication_subtitle: string
 }
 
+export type PublicationInfo = {
+  id: string
+  author_id_libro: string
+  publication_date: string
+  author_name_libro: string
+  publication_title: string
+  publication_subtitle: string
+}
+
 export type Proof = {
   proof: string
   merkle_root: string
@@ -103,15 +112,23 @@ export const getProof = cache(async (publicationId: string): Promise<Proof | nul
   }
 })
 
-export const getPublicationsByAuthor = cache(async (authorId: string): Promise<string[]> => {
+export const getPublicationInfoByAuthor = cache(async (authorId: string): Promise<PublicationInfo[]> => {
   const client = await pool.connect()
   try {
     const { rows } = await client.query(
-      'SELECT id FROM publications WHERE "authorId" = $1',
+      'SELECT id, signal FROM publications WHERE "authorId" = $1 ORDER BY id DESC LIMIT 21',
       [authorId]
     )
 
-    return rows.map(row => row.id)
+    // TODO: Not efficient - we need to fix this
+    return rows.map(row => ({
+      id: row.id,
+      author_id_libro: row.signal.authorId,
+      publication_date: row.signal.publication_date,
+      author_name_libro: row.signal.authorName,
+      publication_title: row.signal.publication_title,
+      publication_subtitle: row.signal.publication_subtitle
+    }))
   } finally {
     client.release()
   }

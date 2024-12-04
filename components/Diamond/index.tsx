@@ -19,7 +19,7 @@ export const Diamond = ({ atBottom = true }) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          className={`fixed ${atBottom ? 'bottom-4' : ''} right-4 rounded-full w-10 h-10`}
+          className={`rounded-full w-10 h-10`}
           size="icon"
         >
           <DiamondIcon className="h-4 w-4" />

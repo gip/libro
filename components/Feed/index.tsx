@@ -49,7 +49,7 @@ export const Feed = () => {
 
   return (
     <>      
-      <div className="mt-4 min-h-[calc(100vh-3.5rem)]">
+      <div className="w-[90%] mx-auto">
         <main className="w-full">
           <div className="text-left p-4">
             <h2 className="text-2xl font-bold">Drafts</h2>
@@ -59,7 +59,6 @@ export const Feed = () => {
           {feedStatus === 'ready' &&
             <FeedContent />}
         </main>
-        <Separator className="my-4" />
       </div>
     </>
   )
