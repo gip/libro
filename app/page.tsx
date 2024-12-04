@@ -22,10 +22,14 @@ const Page = () => {
       <Divider animate={false} />
     </div>
     {status === 'authenticated' && <Feed />}
-    {status !== 'authenticated' && <div className="max-w-3xl mx-auto py-12 px-4">
-        Libo is a platform for human creativity. It is a place where you can share your creativity with others.<br /><br />
-        Read our introductary post <Link href="/p/1" prefetch={true}>Why Libro?</Link> to learn more.
+    {status !== 'authenticated' && <div className="max-w-3xl mx-auto py-12 px-4 text-center">
+        Soon, most of the content accessible to us will have been created by machines. The space for human-created texts,
+        stories, novels, publications, articles, and pictures will shrink dramatically. Storing and preserving them will
+        become significantly more challenging. Our mission is to ensure human creativity thrives in the future by empowering
+        individuals to create, sign, share, verify, archive and pay for content made by other humans in a fully decentralized
+        and permissionless way. So simple. So important.
       </div>}
+    <div className="max-w-3xl mx-auto py-12 px-4 text-left text-xs">Libro is currently in the "Make It Work" stage.</div>
     <Footer />
   </>);
 }
