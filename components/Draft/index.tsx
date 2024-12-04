@@ -183,7 +183,6 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
         const publicationId = response.publicationId
         router.push(`/p/${publicationId}`)
       } else {
-        console.log('Failed to publish:', response)
         throw new Error('Failed to publish')
       }
     } catch (error: unknown) {
