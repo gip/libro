@@ -8,4 +8,4 @@ and permissionless way. So simple. So important.
 
 The first iteration of Libro is built on [World](https://world.org/), the real human network.
 
-*Libro is currently in the [Make It Work](https://www.perplexity.ai/search/what-does-it-mean-to-be-in-the-IZSt3xRITQK_XgiCa82.KQ) stage.*
+*Libro is currently in the [Make It Work](https://www.perplexity.ai/search/what-the-make-it-work-stage-wh-2iYhHhS4T9CCGkfezjDqwA) stage.*
