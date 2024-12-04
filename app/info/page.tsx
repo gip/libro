@@ -18,7 +18,7 @@ const Info = async () => {
       {name ? (
         <>
           <h2 className="text-2xl font-bold">User Information</h2>
-          <p className="mt-4 text-xs bg-gray-200 p-2 break-words text-center">
+          <p className="mt-4 text-xs bg-gray-200 p-2 break-words text-center rounded-xl">
             {name}
           </p>
           <p className="mt-2 text-sm text-gray-500 p-4">
