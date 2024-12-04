@@ -1,6 +1,6 @@
 import Editor from '@/components/Editor'
 import { Diamond } from '@/components/Diamond'
-import { Proof as ProofType, Publication as PublicationType, Author as AuthorType } from '@/lib/db/publication'
+import { Proof as ProofType, Publication as PublicationType, Author as AuthorType } from '@/lib/db/objects'
 
 export const Proof = ({ publication, proof }: { publication: PublicationType, proof: ProofType }) => {
 

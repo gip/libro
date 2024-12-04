@@ -1,4 +1,4 @@
-import { getPublication } from '@/lib/db/publication'
+import { getPublication } from '@/lib/db/objects'
 import { notFound } from 'next/navigation'
 
 type Params = Promise<{ publicationId: string }>
