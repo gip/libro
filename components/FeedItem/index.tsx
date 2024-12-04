@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 export type FeedItemD = {
     id: string;
     title: string;
-    content: { content: string };
+    content: { content: string } | { html: string };
     created_at?: string;
     updated_at?: string;
 }
@@ -25,6 +25,13 @@ export const FeedItem = ({ item }: { item: FeedItemD | null }) => {
     }
   };
 
+  const getContent = (content: { content: string } | { html: string }) => {
+    if ('html' in content) {
+      return content.html;
+    }
+    return content.content;
+  };
+
   return (
     <Card key={item?.id} className={`shadow-sm w-full ${item ? 'cursor-pointer' : ''}`} onClick={handleClick}>
       <CardHeader className="py-2 px-3">
@@ -34,7 +41,7 @@ export const FeedItem = ({ item }: { item: FeedItemD | null }) => {
       </CardHeader>
       <CardContent className="py-2 px-3">
         <div className="text-sm text-muted-foreground line-clamp-2">
-          {item ? JSON.stringify(item.content.html) : <FeedItemLoading />}
+          {item ? JSON.stringify(getContent(item.content)) : <FeedItemLoading />}
         </div>
       </CardContent>
     </Card>
