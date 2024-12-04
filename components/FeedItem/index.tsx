@@ -34,7 +34,7 @@ export const FeedItem = ({ item }: { item: FeedItemD | null }) => {
       </CardHeader>
       <CardContent className="py-2 px-3">
         <div className="text-sm text-muted-foreground line-clamp-2">
-          {item ? JSON.stringify(item.content.content) : <FeedItemLoading />}
+          {item ? JSON.stringify(item.content.html) : <FeedItemLoading />}
         </div>
       </CardContent>
     </Card>
