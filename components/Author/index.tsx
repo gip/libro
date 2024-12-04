@@ -1,6 +1,6 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
@@ -15,7 +15,7 @@ type AuthorData = {
 }
 
 export const Author = ({ authorId }: { authorId: string | null }) => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [author, setAuthor] = useState<AuthorData | null>(null);
   const [originalAuthor, setOriginalAuthor] = useState<AuthorData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -23,6 +23,12 @@ export const Author = ({ authorId }: { authorId: string | null }) => {
   const [isSelf, setIsSelf] = useState<boolean>(false);
   const [authorNotFound, setAuthorNotFound] = useState<boolean>(false);
   const router = useRouter();
+
+  useEffect(() => {
+    if (!authorId && status === 'unauthenticated') {
+      signIn('worldcoin')
+    }
+  }, [status, authorId])
 
   useEffect(() => {
     const fetchAuthor = async () => {

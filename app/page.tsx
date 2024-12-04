@@ -29,7 +29,7 @@ const Page = () => {
         individuals to create, sign, share, verify, archive and pay for content made by other humans in a fully decentralized
         and permissionless way. So simple. So important.
       </div>}
-    <div className="max-w-3xl mx-auto py-12 px-4 text-left text-xs">Libro is currently in the "Make It Work" stage.</div>
+    <div className="max-w-3xl mx-auto py-12 px-4 text-left text-xs">Libro is currently in the &quot;Make It Work&quot; stage.</div>
     <Footer />
   </>);
 }
