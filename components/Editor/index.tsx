@@ -6,6 +6,7 @@ import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
+import Underline from '@tiptap/extension-underline'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import js from 'highlight.js/lib/languages/javascript'
 import ts from 'highlight.js/lib/languages/typescript'
@@ -84,8 +85,12 @@ export default function Editor({
   const editor = useEditor({
     extensions: [
       StarterKit,
+      Underline,
       Link.configure({
         openOnClick: false,
+        HTMLAttributes: {
+          class: 'underline text-blue-600 hover:text-blue-800'
+        },
       }),
       Image.configure({
         allowBase64: true,
@@ -228,8 +233,7 @@ export default function Editor({
       )}
 
       <div className="space-y-4">
-        <Input
-          type="text"
+        <textarea
           value={title}
           onChange={(e) => {
             const newValue = e.target.value.slice(0, 80);
@@ -237,8 +241,24 @@ export default function Editor({
             setTitle(newValue);
           }}
           placeholder="Title"
-          className="editor-input text-4xl sm:text-4xl md:text-4xl px-0"
+          className="editor-input text-4xl sm:text-4xl md:text-4xl px-0 w-full resize-none overflow-hidden border-none bg-transparent focus:outline-none focus:ring-0 whitespace-pre-wrap break-words"
           readOnly={!editable}
+          rows={1}
+          style={{
+            minHeight: '1.5em',
+            height: 'auto'
+          }}
+          ref={(textarea) => {
+            if (textarea) {
+              textarea.style.height = '0';
+              textarea.style.height = `${textarea.scrollHeight}px`;
+            }
+          }}
+          onInput={(e) => {
+            const target = e.target as HTMLTextAreaElement;
+            target.style.height = '0';
+            target.style.height = `${target.scrollHeight}px`;
+          }}
         />
         
         {editable || subtitle ? (

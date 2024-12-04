@@ -28,8 +28,6 @@ export async function PUT(
 
   const signal = JSON.stringify(publication);
 
-  console.log('Signal', signal);
-
   const proof: ISuccessResult = {
     proof: verification.proof,
     merkle_root: verification.merkle_root,
@@ -46,7 +44,6 @@ export async function PUT(
   )) as IVerifyResponse
 
   if(!verifyRes.success) {
-    console.log('Invalid proof', verifyRes);
     return NextResponse.json({ success: false, message: "Invalid proof" }, { status: 400 });
   }
 
@@ -75,7 +72,6 @@ export async function PUT(
 
   const draft = draftResult.rows[0];
 
-  console.log('SUB', draft.subtitle, publication_subtitle);
   // Consolidated check for title, subtitle, and content
   if (
     draft.title !== publication_title || 
