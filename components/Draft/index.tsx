@@ -11,7 +11,7 @@ import {
   VerifyCommandInput
 } from "@worldcoin/minikit-js"
 import { JsonValue, sortAndStringifyJson } from '@/lib/json'
-import { Author } from '@/lib/db/publication'
+import { Author } from '@/lib/db/objects'
 import Editor from '@/components/Editor'
 import { AlertCircle } from "lucide-react"
 import {

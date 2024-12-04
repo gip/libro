@@ -1,160 +1,97 @@
 'use client'
 
 import { signIn, useSession } from 'next-auth/react'
-import { useEffect, useState, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { type Author as AuthorType } from '@/lib/db/objects'
 
-type AuthorData = {
-  id?: string;
-  name: string;
-  bio: string;
-  avatar_url?: string;
-}
-
-export const Author = ({ authorId }: { authorId: string | null }) => {
-  const { data: session, status } = useSession();
-  const [author, setAuthor] = useState<AuthorData | null>(null);
-  const [originalAuthor, setOriginalAuthor] = useState<AuthorData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isSelf, setIsSelf] = useState<boolean>(false);
-  const [authorNotFound, setAuthorNotFound] = useState<boolean>(false);
-  const router = useRouter();
+export const Author = ({ create, author, publicationIds }: { create: boolean, author: AuthorType | null, publicationIds: string[] }) => {
+  const { data: session, status } = useSession()
+  const [newAuthor, setNewAuthor] = useState<Omit<AuthorType, 'id'>>({ 
+    name: '',
+    bio: ''
+  })
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
 
   useEffect(() => {
-    if (!authorId && status === 'unauthenticated') {
+    if (create && status === 'unauthenticated') {
       signIn('worldcoin')
     }
-  }, [status, authorId])
-
-  useEffect(() => {
-    const fetchAuthor = async () => {
-      if (authorId) {
-        try {
-          const raw = await fetch(`/api/author/${authorId}`);
-          const response = await raw.json();
-          if (response.success) {
-            setAuthor(response.author);
-            setOriginalAuthor(response.author);
-            setIsSelf(response.self);
-          } else {
-            setAuthorNotFound(true);
-          }
-        } catch (error) {
-          console.error('Failed to fetch author:', error);
-          setAuthorNotFound(true);
-        }
-      } else {
-        // If authorId is null, allow creating a new author if logged in
-        if (session) {
-          setAuthor({ name: '', bio: '', avatar_url: '' });
-          setIsSelf(true);
-        }
-      }
-      setLoading(false);
-    };
-
-    fetchAuthor();
-  }, [authorId, router, session]);
+  }, [create, status])
 
   const handleSave = async () => {
     try {
-      const method = 'POST';
       const raw = await fetch(`/api/author/`, {
-        method,
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(author),
-      });
-      const response = await raw.json();
-      if (response.success) {
-        setOriginalAuthor(author);
-        if (response.author?.id) {
-          router.replace(`/a/${response.author.id}`);
-        }
+        body: JSON.stringify(newAuthor),
+      })
+      const response = await raw.json()
+      if (response.success && response.author?.id) {
+        router.replace(`/a/${response.author.id}`)
       }
     } catch (error) {
-      console.error('Failed to save author:', error);
-      setError('Failed to save author');
+      console.error('Failed to save author:', error)
+      setError('Failed to save author')
     }
-  };
-
-  const isAuthorChanged = useCallback(() => {
-    return JSON.stringify(author) !== JSON.stringify(originalAuthor);
-  }, [author, originalAuthor]);
-
-  if (loading) {
-    return <div>Loading...</div>;
   }
 
-  if (authorNotFound) {
-    return <div>Author not found</div>;
-  }
-
-  if (!session && !authorId) {
-    return <div>Please log in</div>;
-  }
-
-  if (authorId && author) {
-    return (
+  if (author) {
+    return (<>
+      <div className="w-[90%] mx-auto">
+        <div className="text-xs italic text-center text-gray-500">This author was created by a human on Libro. Every publication under this author is signed by a human.<br/>This is not a bot.</div>
+      </div>
       <div className="w-[90%] mx-auto space-y-8 py-8">
-        <div className="space-y-4">
+        <div className="space-y-4 text-center">
           <div>
-            <span className="text-base">Author: </span>
-            <span className="text-2xl">{author.name}</span>
+            <span className="text-3xl">{author.name}</span>
           </div>
           <div>
-            <span className="text-base">Bio: </span>
-            <span className="text-2xl">{author.bio}</span>
+            <span className="text-sm">{author.bio}</span>
           </div>
-          <div>
-            <span className="text-base">Avatar: </span>
-            <span className="text-2xl">{author.avatar_url}</span>
-          </div>
-          <div>
-            <span className="text-base">Author URL: </span>
-            <a href={`${process.env.NEXT_PUBLIC_APP_URL}/a/${authorId}`} className="text-sm text-blue-500 hover:underline">
-              {`${process.env.NEXT_PUBLIC_APP_URL}/a/${authorId}`}
+          <div className="text-xm">
+            <a href={`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.id}`} className="text-sm text-blue-500 hover:underline">
+              {`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.id}`}
             </a>
           </div>
         </div>
+        <div className="space-y-4">
+          <div className="text-sm text-muted-foreground">
+            This author has {publicationIds.length} publication{publicationIds.length !== 1 ? 's' : ''}
+          </div>
+        </div>
       </div>
-    );
+    </>)
   }
 
-  return (
-    <div className="w-[90%] mx-auto space-y-4 py-4">
-      {error && <div className="text-red-500">{error}</div>}
-      <Input
-        value={author?.name || ''}
-        onChange={(e) => setAuthor({ ...author, name: e.target.value } as AuthorData)}
-        placeholder="Name"
-        className="w-full"
-        disabled={!!authorId}
-      />
-      <Textarea
-        value={author?.bio || ''}
-        onChange={(e) => setAuthor({ ...author, bio: e.target.value } as AuthorData)}
-        placeholder="Bio"
-        className="w-full"
-        disabled={!!authorId}
-      />
-      <Input
-        value={author?.avatar_url || ''}
-        onChange={(e) => setAuthor({ ...author, avatar_url: e.target.value } as AuthorData)}
-        placeholder="Avatar URL"
-        className="w-full"
-        disabled={!!authorId}
-      />
-      {!authorId && isSelf && (
+  if (create && status === 'authenticated') {
+    return (
+      <div className="w-[90%] mx-auto space-y-4 py-4">
+        {error && <div className="text-red-500">{error}</div>}
+        <Input
+          value={newAuthor.name}
+          onChange={(e) => setNewAuthor(prev => ({ ...prev, name: e.target.value }))}
+          placeholder="Name"
+          className="w-full"
+        />
+        <Textarea
+          value={newAuthor.bio || ''}
+          onChange={(e) => setNewAuthor(prev => ({ ...prev, bio: e.target.value }))}
+          placeholder="Bio"
+          className="w-full"
+        />
         <div className="flex space-x-2">
-          <Button onClick={handleSave} disabled={!isAuthorChanged()}>Save</Button>
+          <Button onClick={handleSave}>Save</Button>
         </div>
-      )}
-    </div>
-  );
-} 
+      </div>
+    )
+  }
+
+  return <div className="w-[90%] mx-auto space-y-4 py-4">Author not found</div>
+}

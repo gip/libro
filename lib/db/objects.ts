@@ -32,6 +32,22 @@ export type Proof = {
   verification_level: 'orb'
 }
 
+export const getAuthor = cache(async (authorId: string): Promise<Author | null> => {
+  const client = await pool.connect()
+  try {
+    const { rows } = await client.query(
+      `SELECT a.id, a.name, a.bio 
+       FROM authors a
+       WHERE a.id = $1`,
+      [authorId]
+    )
+
+    return rows[0] || null
+  } finally {
+    client.release()
+  }
+})
+
 export const getAuthors = cache(async (userId: string): Promise<Author[]> => {
   const client = await pool.connect()
   try {
@@ -82,6 +98,20 @@ export const getProof = cache(async (publicationId: string): Promise<Proof | nul
     }
 
     return rows[0].proof
+  } finally {
+    client.release()
+  }
+})
+
+export const getPublicationsByAuthor = cache(async (authorId: string): Promise<string[]> => {
+  const client = await pool.connect()
+  try {
+    const { rows } = await client.query(
+      'SELECT id FROM publications WHERE "authorId" = $1',
+      [authorId]
+    )
+
+    return rows.map(row => row.id)
   } finally {
     client.release()
   }

@@ -1,7 +1,7 @@
 import { Header } from '@/components/Header'
 import { Diamond } from '@/components/Diamond'
 import { Divider } from '@/components/Divider'
-import { getAuthors } from '@/lib/db/publication'
+import { getAuthors } from '@/lib/db/objects'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { Footer } from '@/components/Footer'
@@ -25,7 +25,7 @@ const Info = async () => {
             This unique ID is the only information we store about you.
             It is application-specific and cannot be traced.
           </p>
-          <h2 className="text-2xl font-bold">Authors</h2>
+          <h2 className="text-2xl font-bold">Authorship</h2>
           {authors && authors.map((author) => (
             <div className="px-4 py-2" key={author.id}>
               <h3 className="text-lg font-bold">

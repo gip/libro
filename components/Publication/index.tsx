@@ -2,7 +2,7 @@ import Editor from '@/components/Editor'
 import { Diamond } from '@/components/Diamond'
 import { timeAgo } from '@/lib/time'
 import Link from 'next/link'
-import { Publication as PublicationType, Author } from '@/lib/db/publication'
+import { Publication as PublicationType, Author } from '@/lib/db/objects'
 
 export const Publication = ({ publication, proofLink }: { publication: PublicationType, proofLink?: string }) => {
 

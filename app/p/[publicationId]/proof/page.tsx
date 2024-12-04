@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { Proof } from '@/components/Proof'
-import { getProof, getPublication } from '@/lib/db/publication'
+import { getProof, getPublication } from '@/lib/db/objects'
 
 type Params = Promise<{ publicationId: string }>
 
