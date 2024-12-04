@@ -13,6 +13,12 @@ import {
 import { JsonValue, sortAndStringifyJson } from '@/lib/json'
 import { Author } from '@/lib/db/publication'
 import Editor from '@/components/Editor'
+import { AlertCircle } from "lucide-react"
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert"
 
 type DraftData = {
   id?: string
@@ -20,6 +26,18 @@ type DraftData = {
   subtitle: string
   content: { html: string } | null
   authorId?: string
+}
+
+const AlertDestructive = ({ message }: { message: string }) => {
+  return (
+    <Alert variant="destructive">
+      <AlertCircle className="h-4 w-4" />
+      <AlertTitle>Attention</AlertTitle>
+      <AlertDescription>
+        {message}
+      </AlertDescription>
+    </Alert>
+  )
 }
 
 export const Draft = ({ draftId }: { draftId: string | null }) => {
@@ -141,6 +159,10 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
 
   const handlePublish = async () => {
     try {
+      if(!MiniKit.isInstalled()) {
+        setError('Proof of humanity is required to sign and publish. Please try again in the World App.')
+        return
+      }
       setIsEditingDisabled(true)
       await handleSave()
       if (!draftId || !draft?.authorId) throw new Error('Draft ID or Author ID is missing')
@@ -222,7 +244,8 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
 
   return (
     <div className="w-[90%] mx-auto space-y-4 py-4">
-      {error && <div className="text-red-500">{error}</div>}
+      {error && <AlertDestructive message={error} />}
+
       <div className="flex space-x-2">
         <Button onClick={handleSave} disabled={!isDraftChanged() || isEditingDisabled}>Save</Button>
         {draftId && <Button onClick={handleDelete} variant="destructive" disabled={isEditingDisabled}>Delete</Button>}
