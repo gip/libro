@@ -16,7 +16,7 @@ const Page = async ({ params }: { params: Promise<{ authorId: string }> }) => {
 
   return (<>
     <Header />
-    <div className="max-w-3xl mx-auto py-12 px-4">
+    <div className="w-[96%] mx-auto space-y-4 py-4">
       <Author create={resolvedParams.authorId === 'new'} author={author} publicationInfos={publicationInfos} />
     </div>
     <Footer />

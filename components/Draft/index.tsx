@@ -11,7 +11,7 @@ import {
   VerifyCommandInput
 } from "@worldcoin/minikit-js"
 import { JsonValue, sortAndStringifyJson } from '@/lib/json'
-import { Author } from '@/lib/db/objects'
+import { type Author } from '@/types'
 import Editor from '@/components/Editor'
 import { AlertCircle } from "lucide-react"
 import {
@@ -19,12 +19,13 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@/components/ui/alert"
+import { type PublicationV1 as PublicationType, type ContentOrHtml } from '@/types'
 
 type DraftData = {
   id?: string
   title: string
   subtitle: string
-  content: { html: string } | null
+  content: ContentOrHtml
   authorId?: string
 }
 
@@ -42,7 +43,7 @@ const AlertDestructive = ({ message }: { message: string }) => {
 
 export const Draft = ({ draftId }: { draftId: string | null }) => {
   const { data: session, status } = useSession()
-  const [draft, setDraft] = useState<DraftData | null>({ title: '', subtitle: '', content: null })
+  const [draft, setDraft] = useState<DraftData | null>({ title: '', subtitle: '', content: { html: '' } })
   const [originalDraft, setOriginalDraft] = useState<DraftData | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
@@ -112,6 +113,7 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
         const raw = await fetch('/api/authors')
         const response = await raw.json()
         if (response.success) {
+          console.log('Authors:', response.authors)
           setAuthors(response.authors)
         }
       } catch (error) {
@@ -172,9 +174,10 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
       
       const action = 'written-by-a-human'
       // Create signature payload
-      const publicatonPayload: Record<string, JsonValue> = {
+      const publicatonPayload: PublicationType = {
         author_id_libro: author.id,
         author_name_libro: author.name,
+        author_bio_libro: author.bio || '',
         publication_title: draft.title,
         publication_subtitle: draft.subtitle,
         publication_content: draft.content,

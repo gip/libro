@@ -51,15 +51,19 @@ export const Author = ({ create, author, publicationInfos }: { create: boolean, 
       <div className="w-[90%] mx-auto space-y-8 py-8">
         <div className="space-y-4 text-center">
           <div>
+            <span className="text-xs">Author: </span>
             <span className="text-3xl">{author.name}</span>
           </div>
           <div>
-            <span className="text-sm">{author.bio}</span>
+            <span className="text-xs">Bio: </span>
+            <span className="text-md">{author.bio}</span>
           </div>
           <div className="text-xm">
+            <span className="text-xs">Link: </span>
+            <span>
             <a href={`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.id}`} className="text-sm text-blue-500 hover:underline">
               {`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.id}`}
-            </a>
+            </a></span>
           </div>
         </div>
         <div className="space-y-4">
