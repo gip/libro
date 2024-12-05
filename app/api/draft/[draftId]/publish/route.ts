@@ -111,8 +111,8 @@ export async function PUT(
     const version = '1';
     // Create article
     const articleResult = await client.query(
-      'INSERT INTO publications ("userId", "authorId", proof, signal, content, version) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
-      [userId, author_id_libro, proof, signal, draft.content, version]
+      'INSERT INTO publications ("userId", "authorId", proof, signal, content, version, title, subtitle, date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id',
+      [userId, author_id_libro, proof, signal, draft.content, version, publication_title, publication_subtitle, publication_date]
     );
 
     // Update draft status to published

@@ -40,7 +40,6 @@ const Info = async () => {
           Please log in to see your information
         </p>
       )}
-      <Diamond />
       <Footer />
     </div>
   </>);

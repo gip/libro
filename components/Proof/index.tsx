@@ -1,6 +1,6 @@
 import Editor from '@/components/Editor'
 import { Diamond } from '@/components/Diamond'
-import { Proof as ProofType, Publication as PublicationType, Author as AuthorType } from '@/lib/db/objects'
+import { Proof as ProofType, PublicationV1 as PublicationType, Author as AuthorType } from '@/lib/db/objects'
 
 export const Proof = ({ publication, proof }: { publication: PublicationType, proof: ProofType }) => {
 
@@ -8,6 +8,9 @@ export const Proof = ({ publication, proof }: { publication: PublicationType, pr
 
   const title = 'Independent Verification of Human Authorship'
 
+  const eQ = (str: string) => str.replace(/\"/g, '\\"')
+  const eR = (str: string) => eQ(str.replace(/</g, '&lt;').replace(/>/g, '&gt;'))
+  
   const contentRaw = `This document will show how to independently verify the proof of authorship of the publication <i><u>${publication.publication_title}</u></i> authored by <a href="${process.env.NEXT_PUBLIC_APP_URL}/a/${publication.author_id_libro}">${publication.author_name_libro}</a>.
 <br/>
 <br/>In a zero-knowledge world, the proof of authorship should always be verifiable by external parties. In the longer term, it should be possible for any agent or consumer of content to verify the proof of Human Authorship (HA) and trust the content without relying on Libro or even World's zero-knowledge infrastructure.
@@ -34,10 +37,12 @@ export const Proof = ({ publication, proof }: { publication: PublicationType, pr
 <br/>  author_id_libro: '${publication.author_id_libro}',
 <br/>  // This is the name of the author who signed the document
 <br/>  author_name_libro: "${publication.author_name_libro}",
+<br/>  // The author's bio is included in the signed payload
+<br/>  author_bio_libro: "${publication.author_bio_libro}",
 <br/>  // Below are title, subtitle, content and publication date
-<br/>  publication_title: "${publication.publication_title}",
-<br/>  publication_subtitle: "${publication.publication_subtitle}",
-<br/>  publication_content: { html: "${'html' in publication.publication_content ? publication.publication_content.html.replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''}" },
+<br/>  publication_title: "${eQ(publication.publication_title)}",
+<br/>  publication_subtitle: "${eQ(publication.publication_subtitle)}",
+<br/>  publication_content: { html: "${'html' in publication.publication_content ? eR(publication.publication_content.html) : ''}" },
 <br/>  publication_date: '${publication.publication_date}'
 <br/>};
 <br/>

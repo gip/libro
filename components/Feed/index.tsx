@@ -2,6 +2,8 @@
 
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { Plus } from 'lucide-react'
 
 import { Separator } from "@/components/ui/separator"
 import type { FeedItemD } from '@/components/FeedItem'
@@ -49,17 +51,19 @@ export const Feed = () => {
 
   return (
     <>      
-      <div className="mt-4 min-h-[calc(100vh-3.5rem)]">
+      <div className="w-[90%] mx-auto">
         <main className="w-full">
-          <div className="text-left p-4">
+          <div className="text-left p-4 flex items-start gap-2">
             <h2 className="text-2xl font-bold">Drafts</h2>
+            <Link href="/d/new" className="hover:bg-gray-300 bg-gray-200 p-1 rounded-md mt-1">
+              <Plus size={10} />
+            </Link>
           </div>
           {feedStatus === 'loading' &&
               <FeedLoading />}
           {feedStatus === 'ready' &&
             <FeedContent />}
         </main>
-        <Separator className="my-4" />
       </div>
     </>
   )

@@ -1,36 +1,8 @@
 import { pool } from './index'
 import { cache } from 'react'
+import { Author, PublicationV1, Proof, PublicationInfo } from '@/types'
 
-export type Author = {
-  id: string
-  name: string
-  bio?: string
-}
-
-type ContentOrHtml = {
-  content: {
-    type: string
-    content: Array<any>
-  }
-} | {
-  html: string
-}
-
-export type Publication = {
-  author_id_libro: string
-  publication_date: string
-  author_name_libro: string
-  publication_title: string
-  publication_content: ContentOrHtml
-  publication_subtitle: string
-}
-
-export type Proof = {
-  proof: string
-  merkle_root: string
-  nullifier_hash: string
-  verification_level: 'orb'
-}
+export type { Author, PublicationV1, Proof, PublicationInfo }
 
 export const getAuthor = cache(async (authorId: string): Promise<Author | null> => {
   const client = await pool.connect()
@@ -65,7 +37,7 @@ export const getAuthors = cache(async (userId: string): Promise<Author[]> => {
   }
 })
 
-export const getPublication = cache(async (publicationId: string): Promise<Publication | null> => {
+export const getPublication = cache(async (publicationId: string): Promise<PublicationV1 | null> => {
   const client = await pool.connect()
   console.log('LOA', publicationId)
   try {
@@ -103,15 +75,23 @@ export const getProof = cache(async (publicationId: string): Promise<Proof | nul
   }
 })
 
-export const getPublicationsByAuthor = cache(async (authorId: string): Promise<string[]> => {
+export const getPublicationInfoByAuthor = cache(async (authorId: string): Promise<PublicationInfo[]> => {
   const client = await pool.connect()
   try {
     const { rows } = await client.query(
-      'SELECT id FROM publications WHERE "authorId" = $1',
+      'SELECT id, signal FROM publications WHERE "authorId" = $1 ORDER BY id DESC LIMIT 21',
       [authorId]
     )
 
-    return rows.map(row => row.id)
+    // TODO: Not efficient - we need to fix this
+    return rows.map(row => ({
+      id: row.id,
+      author_id_libro: row.signal.authorId,
+      publication_date: row.signal.publication_date,
+      author_name_libro: row.signal.authorName,
+      publication_title: row.signal.publication_title,
+      publication_subtitle: row.signal.publication_subtitle
+    }))
   } finally {
     client.release()
   }

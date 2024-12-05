@@ -18,7 +18,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const isProduction = process.env.NODE_ENV === 'production';
-  const ErudaProvider = !isProduction
+  const enableEruda = process.env.ENABLE_ERUDA === 'true';
+  
+  const ErudaProvider = !isProduction && enableEruda
     ? dynamic(() => import("../components/Eruda").then((c) => c.ErudaProvider), { ssr: true })
     : ({ children }: { children: React.ReactNode }) => <>{children}</>;
 
