@@ -343,14 +343,14 @@ export default function Editor({
             )}
           </div>
         ) : (
-          <div className="flex flex-wrap items-center gap-2 mb-4 sm:mb-8 mt-2 ml-1 italic">
+          <div className="flex flex-wrap items-center gap-2 mb-4 sm:mb-8 mt-2 ml-1 italic text-sm">
             {author.map((author, index) => (
               <div key={index} className="flex flex-col items-start gap-1">
                 <div className="">
                   <span>By </span>
-                  <span className="text-blurple">
+                  <NextLink href={`/a/${author.id}`} className="text-blurple hover:underline">
                     {author.name}
-                  </span>
+                  </NextLink>
                   {author.bio && (
                     <span className="ml-1">
                       — {author.bio}
