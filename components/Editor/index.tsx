@@ -1,11 +1,18 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
+import NextLink from 'next/link'
+import { usePathname } from 'next/navigation'
+
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
+import Underline from '@tiptap/extension-underline'
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import js from 'highlight.js/lib/languages/javascript'
+import ts from 'highlight.js/lib/languages/typescript'
 import { Button } from '@/components/ui/button'
 import { Input } from "@/components/ui/input"
 import { Bold, Italic, Strikethrough, Quote, LinkIcon, ImageIcon, List, ListOrdered, ChevronDown, X, Plus } from 'lucide-react'
@@ -27,42 +34,68 @@ import {
   CardContent,
 } from "@/components/ui/card"
 import './editor.css'
+import type { Author } from '@/lib/db/objects'
+import { all, createLowlight } from 'lowlight'
 
-export type Author = {
-  id: string;
-  name: string;
-};
+const lowlight = createLowlight(all)
+lowlight.register('js', js)
+lowlight.register('ts', ts)
 
-export default function Editor({ authors, initialContent, setContent,
-  initialTitle, setTitle,
-  initialSubtitle, setSubtitle,
-  initialAuthorId, setAuthorId,
-  editable = true
-}: { authors: Author[], initialContent: Object | null, setContent: (content: Object) => void,
-  initialTitle: string, setTitle: (title: string) => void,
-  initialSubtitle: string, setSubtitle: (subtitle: string) => void,
-  initialAuthorId: string | null, setAuthorId: (authorId: string | null) => void,
+export default function Editor({ 
+  authors, 
+  initialContent, 
+  setContent = () => {},
+  initialTitle, 
+  setTitle = () => {},
+  initialSubtitle, 
+  setSubtitle = () => {},
+  initialAuthorId, 
+  setAuthorId = () => {},
+  publicationDate,
+  editable = true,
+  codeBlocks = false
+}: { 
+  authors: Author[], 
+  initialContent: Object | null, 
+  setContent?: (content: { html: string }) => void,
+  initialTitle: string, 
+  setTitle?: (title: string) => void,
+  initialSubtitle: string, 
+  setSubtitle?: (subtitle: string) => void,
+  initialAuthorId: string | null, 
+  setAuthorId?: (authorId: string | null) => void,
+  publicationDate?: string,
   editable?: boolean,
- }) {
-  const [author, setLocalAuthor] = useState<Author[]>([])
+  codeBlocks?: boolean
+}) {
+  const pathname = usePathname()
+  const findAuthor = useCallback((): Author[] => {
+    if (initialAuthorId) {
+      const matchedAuthor = authors.find(author => author.id === initialAuthorId)
+      if (matchedAuthor) {
+        return [matchedAuthor]
+      }
+    }
+    return []
+  }, [initialAuthorId, authors])
+  const [author, setLocalAuthor] = useState<Author[]>(findAuthor())
   const [isAuthorDialogOpen, setIsAuthorDialogOpen] = useState(false)
   const [title, setLocalTitle] = useState(initialTitle)
   const [subtitle, setLocalSubtitle] = useState(initialSubtitle)
 
   useEffect(() => {
-    if (initialAuthorId) {
-      const matchedAuthor = authors.find(author => author.id === initialAuthorId)
-      if (matchedAuthor) {
-        setLocalAuthor([matchedAuthor])
-      }
-    }
-  }, [initialAuthorId, authors])
+    setLocalAuthor(findAuthor())
+  }, [initialAuthorId, authors, findAuthor])
 
   const editor = useEditor({
     extensions: [
       StarterKit,
+      Underline,
       Link.configure({
         openOnClick: false,
+        HTMLAttributes: {
+          class: 'underline text-blue-600 hover:text-blue-800'
+        },
       }),
       Image.configure({
         allowBase64: true,
@@ -70,12 +103,15 @@ export default function Editor({ authors, initialContent, setContent,
       Placeholder.configure({
         placeholder: editable ? 'Tell your story...' : '',
       }),
+      ...(codeBlocks ? [CodeBlockLowlight.configure({
+        lowlight: lowlight,
+      })] : []),
     ],
     content: initialContent,
     editable,
     immediatelyRender: false,
     onUpdate: ({ editor }) => {
-      setContent(editor.getJSON())
+      setContent({ html: editor.getHTML() })
     }
   })
 
@@ -115,7 +151,7 @@ export default function Editor({ authors, initialContent, setContent,
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 pt-20">
+    <div className="max-w-4xl mx-auto px-4 py-6 pt-4">
       {editable && (
         <div className="sticky top-0 z-50 bg-background flex justify-center">
           <div className="flex items-center justify-between gap-2 pb-2">
@@ -202,8 +238,7 @@ export default function Editor({ authors, initialContent, setContent,
       )}
 
       <div className="space-y-4">
-        <Input
-          type="text"
+        <textarea
           value={title}
           onChange={(e) => {
             const newValue = e.target.value.slice(0, 80);
@@ -211,8 +246,24 @@ export default function Editor({ authors, initialContent, setContent,
             setTitle(newValue);
           }}
           placeholder="Title"
-          className="editor-input text-4xl sm:text-4xl md:text-4xl px-0"
+          className="editor-input text-4xl sm:text-4xl md:text-4xl px-0 w-full resize-none overflow-hidden border-none bg-transparent focus:outline-none focus:ring-0 whitespace-pre-wrap break-words"
           readOnly={!editable}
+          rows={1}
+          style={{
+            minHeight: '1.5em',
+            height: 'auto'
+          }}
+          ref={(textarea) => {
+            if (textarea) {
+              textarea.style.height = '0';
+              textarea.style.height = `${textarea.scrollHeight}px`;
+            }
+          }}
+          onInput={(e) => {
+            const target = e.target as HTMLTextAreaElement;
+            target.style.height = '0';
+            target.style.height = `${target.scrollHeight}px`;
+          }}
         />
         
         {editable || subtitle ? (
@@ -292,13 +343,30 @@ export default function Editor({ authors, initialContent, setContent,
             )}
           </div>
         ) : (
-          <div className="flex flex-wrap items-center gap-2 mb-4 sm:mb-8 mt-2">
+          <div className="flex flex-wrap items-center gap-2 mb-4 sm:mb-8 mt-2 ml-1 italic text-sm">
             {author.map((author, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-1 sm:gap-2 bg-muted rounded-full px-3 sm:px-5 py-2 text-sm bg-gray-100"
-              >
-                <span className="truncate max-w-[100px] sm:max-w-[150px]">{author.name}</span>
+              <div key={index} className="flex flex-col items-start gap-1">
+                <div className="">
+                  <span>By </span>
+                  <NextLink href={`/a/${author.id}`} className="text-blurple hover:underline">
+                    {author.name}
+                  </NextLink>
+                  {author.bio && (
+                    <span className="ml-1">
+                      — {author.bio}
+                    </span>
+                  )}
+                  <span>.</span>
+                </div>
+                {publicationDate && (
+                  <span className="text-gray-500">
+                    Signed and published on <strong>{new Date(publicationDate).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric', 
+                      year: 'numeric'
+                    })}</strong>. Proof of human authorship can be <NextLink href={`${pathname}/proof`} className="text-blurple hover:underline">verified</NextLink> independently.
+                  </span>
+                )}
               </div>
             ))}
           </div>
