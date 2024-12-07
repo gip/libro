@@ -33,7 +33,10 @@ export const Header = () => {
         )}
         <div className="flex-1 flex justify-center">
           <Link href="/" passHref>
-            <h1 className="text-xl font-bold cursor-pointer">Libro</h1>
+            <h1 className="text-xl font-bold cursor-pointer flex items-center">
+              Libro
+              <div style={{ display: 'inline-block', transform: 'rotate(50deg)', marginLeft: '0.5rem' }} className="text-blurple text-4xl">〄</div>
+            </h1>
           </Link>
         </div>
         <div className="flex items-center">

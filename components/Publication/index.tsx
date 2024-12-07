@@ -13,7 +13,7 @@ export const Publication = ({ publication, proofLink }: { publication: Publicati
 
   return (
     <div className="w-[96%] mx-auto space-y-4 py-4">
-      <div className="text-xs text-muted-foreground text-center">
+      {/* <div className="text-xs text-muted-foreground text-center">
         Signed by <Link href={`${process.env.NEXT_PUBLIC_APP_URL}/a/${authors[0].id}`} className="underline hover:text-primary">{authors[0].name}</Link> {timeAgo(publication.publication_date)}. <br />
         Proof of authorship can be {proofLink ? (
           <Link href={proofLink} className="underline hover:text-primary">
@@ -22,7 +22,7 @@ export const Publication = ({ publication, proofLink }: { publication: Publicati
         ) : (
           'verified'
         )} independently.
-      </div>
+      </div> */}
         <Editor authors={authors}
               initialContent={content}
               initialTitle={publication.publication_title}

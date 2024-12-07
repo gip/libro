@@ -9,7 +9,10 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Libro",
-  description: "Libro",
+  description: "A protocol to protect and preserve human-created texts, stories, novels, publications, articles, and pictures.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
@@ -30,7 +33,7 @@ export default function RootLayout({
         <body className={inter.className}>
           <ErudaProvider>
             <MiniKitProvider>
-              <>{children}</>
+              <div className="min-h-screen flex flex-col">{children}</div>
             </MiniKitProvider>
           </ErudaProvider>
         </body>

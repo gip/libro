@@ -23,14 +23,15 @@ const Page = () => {
     </div>
     {status === 'authenticated' && <Feed />}
     {status !== 'authenticated' &&
-      <div className="max-w-3xl mx-auto py-12 px-4 text-center">
-        Soon, most of the content accessible to us will have been created by machines. The space for human-created texts,
+      <div className="max-w-4xl mx-auto py-12 px-4 text-center text-2xl spectral">
+        {/* Soon, most of the content accessible to us will have been created by machines. The space for human-created texts,
         stories, novels, publications, articles, and pictures will shrink dramatically. Storing and preserving them will
         become significantly more challenging. Our mission is to ensure human creativity thrives in the future by empowering
         individuals to create, sign, share, verify, archive and pay for content made by other humans in a fully decentralized
-        and permissionless way. So simple. So important.<br />
+        and permissionless way. So simple. So important.<br /> */}
+        A protocol to protect and preserve human-created texts, stories, novels, publications, articles, and pictures.<br />
         <br />
-        We use <Link href="https://world.org/world-id" className="text-blue-500 hover:underline">World ID</Link> to ensure all users are real humans.
+        We use <Link href="https://world.org/world-id" className="text-blurple hover:underline">World ID</Link> to ensure all users are real humans.
       </div>}
     <Footer />
   </>)

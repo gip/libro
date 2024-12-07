@@ -54,10 +54,10 @@ export const Feed = () => {
       <div className="w-[90%] mx-auto">
         <main className="w-full">
           <div className="text-left p-4 flex items-start gap-2">
-            <h2 className="text-2xl font-bold">Drafts</h2>
-            <Link href="/d/new" className="hover:bg-gray-300 bg-gray-200 p-1 rounded-md mt-1">
+            <h2 className="text-2xl font-bold">Your Drafts</h2>
+            {/* <Link href="/d/new" className="hover:bg-gray-300 bg-gray-200 p-1 rounded-md mt-1">
               <Plus size={10} />
-            </Link>
+            </Link> */}
           </div>
           {feedStatus === 'loading' &&
               <FeedLoading />}
