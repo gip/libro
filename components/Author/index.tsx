@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { type Author as AuthorType, type PublicationInfo } from '@/lib/db/objects'
 import Link from 'next/link'
 
-export const Author = ({ create, author, publicationInfos }: { create: boolean, author: AuthorType | null, publicationInfos: PublicationInfo[] }) => {
+export const Author = ({ create, author, publicationInfos, redirect }: { create: boolean, author: AuthorType | null, publicationInfos: PublicationInfo[], redirect: string | null }) => {
   const { data: session, status } = useSession()
   const [newAuthor, setNewAuthor] = useState<Omit<AuthorType, 'id'>>({ 
     name: '',
@@ -23,6 +23,12 @@ export const Author = ({ create, author, publicationInfos }: { create: boolean, 
       signIn('worldcoin')
     }
   }, [create, status])
+
+  useEffect(() => {
+    if (redirect) {
+      router.replace(redirect)
+    }
+  }, [redirect, router])
 
   const handleSave = async () => {
     try {
@@ -58,10 +64,15 @@ export const Author = ({ create, author, publicationInfos }: { create: boolean, 
             <span className="text-xs">Bio: </span>
             <span className="text-md">{author.bio}</span>
           </div>
-          <div className="text-xm">
+          <div className="text-xm text-blurple">
+            <a href={`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.handle}`} className="text-sm hover:underline">
+              {`@${author.handle}`}
+            </a>
+          </div>
+          <div className="text-xm text-blurple">
             <span className="text-xs">Link: </span>
             <span>
-            <a href={`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.id}`} className="text-sm text-blue-500 hover:underline">
+            <a href={`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.id}`} className="text-sm text-burple hover:underline">
               {`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.id}`}
             </a></span>
           </div>

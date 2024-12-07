@@ -49,11 +49,15 @@ CREATE TABLE authors (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     "userId" INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
+    handle VARCHAR(32),
     bio TEXT,
     avatar TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Create index on handle
+CREATE INDEX idx_authors_handle ON authors(handle);
 
 CREATE TABLE publications (
     id BIGSERIAL PRIMARY KEY,
