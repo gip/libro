@@ -73,3 +73,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+.spectral {
+  font-family: 'Spectral';
+}
