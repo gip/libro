@@ -5,7 +5,8 @@ import { PublicationV1 as PublicationType, Author } from '@/lib/db/objects'
 
 export const Publication = ({ publication, proofLink }: { publication: PublicationType, proofLink?: string }) => {
 
-  const authors: Author[] = [{ id: publication.author_id_libro, name: publication.author_name_libro, bio: publication.author_bio_libro }]
+  const authors: Author[] = [{ id: publication.author_id_libro, name: publication.author_name_libro,
+                               bio: publication.author_bio_libro, handle: publication.author_handle_libro }]
 
   const content = 'content' in publication.publication_content 
     ? publication.publication_content.content

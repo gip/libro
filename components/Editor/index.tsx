@@ -347,10 +347,10 @@ export default function Editor({
             {author.map((author, index) => (
               <div key={index} className="flex flex-col items-start gap-1">
                 <div className="">
-                  <span>By </span>
-                  <NextLink href={`/a/${author.id}`} className="text-blurple hover:underline">
-                    {author.name}
+                  <span>By </span> <NextLink href={`/a/${author.handle}`} className="text-blurple hover:underline">
+                    @{author.handle}
                   </NextLink>
+                  <span className="ml-1">/ {author.name}</span>
                   {author.bio && (
                     <span className="ml-1">
                       — {author.bio}

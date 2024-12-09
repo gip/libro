@@ -9,11 +9,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { type Author as AuthorType, type PublicationInfo } from '@/lib/db/objects'
 import Link from 'next/link'
 
-export const Author = ({ create, author, publicationInfos }: { create: boolean, author: AuthorType | null, publicationInfos: PublicationInfo[] }) => {
+export const Author = ({ create, author, publicationInfos, redirect = null }: { create: boolean, author: AuthorType | null, publicationInfos: PublicationInfo[], redirect?: string | null }) => {
   const { data: session, status } = useSession()
   const [newAuthor, setNewAuthor] = useState<Omit<AuthorType, 'id'>>({ 
     name: '',
-    bio: ''
+    bio: '',
+    handle: ''
   })
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
@@ -24,9 +25,15 @@ export const Author = ({ create, author, publicationInfos }: { create: boolean, 
     }
   }, [create, status])
 
+  useEffect(() => {
+    if (redirect) {
+      router.replace(redirect)
+    }
+  }, [redirect, router])
+
   const handleSave = async () => {
     try {
-      const raw = await fetch(`/api/author/`, {
+      const raw = await fetch(`/api/author`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -46,7 +53,7 @@ export const Author = ({ create, author, publicationInfos }: { create: boolean, 
   if (author) {
     return (<>
       <div className="w-[90%] mx-auto">
-        <div className="text-xs italic text-center text-gray-500">This author was created by a human on Libro. Every publication under this author is signed by a human.<br/>This is not a bot.</div>
+        <div className="text-xs italic text-center text-gray-500">This author was created by a human on Libro. Every publication under this author is signed by a human being.<br/>This is not a bot.</div>
       </div>
       <div className="w-[90%] mx-auto space-y-8 py-8">
         <div className="space-y-4 text-center">
@@ -59,10 +66,16 @@ export const Author = ({ create, author, publicationInfos }: { create: boolean, 
             <span className="text-md">{author.bio}</span>
           </div>
           <div className="text-xm">
+            <span className="text-xs">Handle: </span>
+            <a href={`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.handle}`} className="text-sm text-blurple hover:underline">
+              {`@${author.handle}`}
+            </a>
+          </div>
+          <div className="text-xm">
             <span className="text-xs">Link: </span>
-            <span>
-            <a href={`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.id}`} className="text-sm text-blue-500 hover:underline">
-              {`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.id}`}
+            <span className="text-xm text-blurple">
+            <a href={`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.handle}`} className="text-sm text-burple hover:underline">
+              {`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.handle}`}
             </a></span>
           </div>
         </div>
@@ -97,23 +110,55 @@ export const Author = ({ create, author, publicationInfos }: { create: boolean, 
   }
 
   if (create && status === 'authenticated') {
+    const isNameValid = newAuthor.name.length >= 3 && newAuthor.name.length <= 100
+    const isHandleValid = (newAuthor.handle || '').length >= 3 && (newAuthor.handle || '').length <= 32
+    const isValid = isNameValid && isHandleValid
+
     return (
       <div className="w-[90%] mx-auto space-y-4 py-4">
         {error && <div className="text-red-500">{error}</div>}
-        <Input
-          value={newAuthor.name}
-          onChange={(e) => setNewAuthor(prev => ({ ...prev, name: e.target.value }))}
-          placeholder="Name"
-          className="w-full"
-        />
-        <Textarea
-          value={newAuthor.bio || ''}
-          onChange={(e) => setNewAuthor(prev => ({ ...prev, bio: e.target.value }))}
-          placeholder="Bio"
-          className="w-full"
-        />
+        <div className="flex flex-col gap-1">
+          <Input
+            value={newAuthor.name}
+            onChange={(e) => {
+              const name = e.target.value
+              if (name.length <= 100) {
+                setNewAuthor(prev => ({ ...prev, name }))
+              }
+            }}
+            placeholder="Name"
+            className="w-full"
+          />
+          <span className="text-xs text-gray-500 italic">Name must be 3-100 characters</span>
+        </div>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-1">
+            <span className="text-gray-500">@</span>
+            <Input
+              value={newAuthor.handle}
+              onChange={(e) => {
+                const handle = e.target.value.replace(/[^a-zA-Z0-9\-_]/g, '')
+                if (handle.length <= 32) {
+                  setNewAuthor(prev => ({ ...prev, handle }))
+                }
+              }}
+              placeholder="Handle"
+              className="w-full"
+            />
+          </div>
+          <span className="text-xs text-gray-500 italic">Handle must be 3-32 characters and can only contain letters, numbers, hyphens and underscores</span>
+        </div>
+        <div className="flex flex-col gap-1">
+          <Textarea
+            value={newAuthor.bio || ''}
+            onChange={(e) => setNewAuthor(prev => ({ ...prev, bio: e.target.value }))}
+            placeholder="Bio"
+            className="w-full"
+          />
+          <span className="text-xs text-gray-500 italic">Bio is optional and can be updated later</span>
+        </div>
         <div className="flex space-x-2">
-          <Button onClick={handleSave}>Save</Button>
+          <Button onClick={handleSave} disabled={!isValid}>Create Author</Button>
         </div>
       </div>
     )

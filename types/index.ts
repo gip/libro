@@ -2,6 +2,7 @@
 export type Author = {
     id: string
     name: string
+    handle: string
     bio?: string
   }
   
@@ -19,6 +20,7 @@ export type Author = {
     author_id_libro: string
     publication_date: string
     author_name_libro: string
+    author_handle_libro: string
     author_bio_libro: string
     publication_title: string
     publication_content: ContentOrHtml

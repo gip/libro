@@ -8,10 +8,26 @@ export const getAuthor = cache(async (authorId: string): Promise<Author | null> 
   const client = await pool.connect()
   try {
     const { rows } = await client.query(
-      `SELECT a.id, a.name, a.bio 
+      `SELECT a.id, a.name, a.bio, a.handle
        FROM authors a
        WHERE a.id = $1`,
       [authorId]
+    )
+
+    return rows[0] || null
+  } finally {
+    client.release()
+  }
+})
+
+export const getAuthorByHandle = cache(async (handle: string): Promise<Author | null> => {
+  const client = await pool.connect()
+  try {
+    const { rows } = await client.query(
+      `SELECT a.id, a.name, a.bio, a.handle
+       FROM authors a
+       WHERE a.handle = $1`,
+      [handle]
     )
 
     return rows[0] || null

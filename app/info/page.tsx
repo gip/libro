@@ -1,6 +1,4 @@
 import { Header } from '@/components/Header'
-import { Diamond } from '@/components/Diamond'
-import { Divider } from '@/components/Divider'
 import { getAuthors } from '@/lib/db/objects'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
