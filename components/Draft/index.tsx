@@ -177,6 +177,7 @@ export const Draft = ({ draftId }: { draftId: string | null }) => {
       const publicatonPayload: PublicationType = {
         author_id_libro: author.id,
         author_name_libro: author.name,
+        author_handle_libro: author.handle,
         author_bio_libro: author.bio || '',
         publication_title: draft.title,
         publication_subtitle: draft.subtitle,

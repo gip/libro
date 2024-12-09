@@ -29,7 +29,7 @@ const Page = () => {
         become significantly more challenging. Our mission is to ensure human creativity thrives in the future by empowering
         individuals to create, sign, share, verify, archive and pay for content made by other humans in a fully decentralized
         and permissionless way. So simple. So important.<br /> */}
-        A protocol to protect and preserve human-created texts, stories, novels, publications, articles, and pictures.<br />
+        A protocol to protect and preserve human-created texts, stories, novels, publications, articles, pictures, and more.<br />
         <br />
         We use <Link href="https://world.org/world-id" className="text-blurple hover:underline">World ID</Link> to ensure all users are real humans.
       </div>}

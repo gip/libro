@@ -4,7 +4,7 @@ import { Proof as ProofType, PublicationV1 as PublicationType, Author as AuthorT
 
 export const Proof = ({ publication, proof }: { publication: PublicationType, proof: ProofType }) => {
 
-  const authors: AuthorType[] = [{ id: '0', name: 'Libro Team' }]
+  const authors: AuthorType[] = [{ id: '0', name: 'Libro Team', handle: 'libro' }]
 
   const title = 'Independent Verification of Human Authorship'
 
@@ -37,6 +37,8 @@ export const Proof = ({ publication, proof }: { publication: PublicationType, pr
 <br/>  author_id_libro: '${publication.author_id_libro}',
 <br/>  // This is the name of the author who signed the document
 <br/>  author_name_libro: "${publication.author_name_libro}",
+<br/>  // This is the author's handle
+<br/>  author_handle_libro: "${publication.author_handle_libro}",
 <br/>  // The author's bio is included in the signed payload
 <br/>  author_bio_libro: "${publication.author_bio_libro}",
 <br/>  // Below are title, subtitle, content and publication date

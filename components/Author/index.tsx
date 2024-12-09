@@ -53,7 +53,7 @@ export const Author = ({ create, author, publicationInfos, redirect = null }: { 
   if (author) {
     return (<>
       <div className="w-[90%] mx-auto">
-        <div className="text-xs italic text-center text-gray-500">This author was created by a human on Libro. Every publication under this author is signed by a human.<br/>This is not a bot.</div>
+        <div className="text-xs italic text-center text-gray-500">This author was created by a human on Libro. Every publication under this author is signed by a human being.<br/>This is not a bot.</div>
       </div>
       <div className="w-[90%] mx-auto space-y-8 py-8">
         <div className="space-y-4 text-center">
@@ -74,8 +74,8 @@ export const Author = ({ create, author, publicationInfos, redirect = null }: { 
           <div className="text-xm">
             <span className="text-xs">Link: </span>
             <span className="text-xm text-blurple">
-            <a href={`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.id}`} className="text-sm text-burple hover:underline">
-              {`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.id}`}
+            <a href={`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.handle}`} className="text-sm text-burple hover:underline">
+              {`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.handle}`}
             </a></span>
           </div>
         </div>
