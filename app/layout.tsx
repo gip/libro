@@ -9,7 +9,10 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Libro",
-  description: "Libro",
+  description: "A protocol to protect and preserve human-created texts, stories, novels, publications, articles, and pictures.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
@@ -18,7 +21,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const isProduction = process.env.NODE_ENV === 'production';
-  const ErudaProvider = !isProduction
+  const enableEruda = process.env.ENABLE_ERUDA === 'true';
+  
+  const ErudaProvider = !isProduction && enableEruda
     ? dynamic(() => import("../components/Eruda").then((c) => c.ErudaProvider), { ssr: true })
     : ({ children }: { children: React.ReactNode }) => <>{children}</>;
 
@@ -28,7 +33,7 @@ export default function RootLayout({
         <body className={inter.className}>
           <ErudaProvider>
             <MiniKitProvider>
-              <>{children}</>
+              <div className="min-h-screen flex flex-col">{children}</div>
             </MiniKitProvider>
           </ErudaProvider>
         </body>

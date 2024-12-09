@@ -26,9 +26,7 @@ export async function PUT(
   const { publication, verification } = fullPayload;
   const { publication_title, publication_subtitle, publication_content, publication_date, author_id_libro } = publication;
 
-  const signal = sortAndStringifyJson(publication);
-
-  console.log('Signal', signal);
+  const signal = JSON.stringify(publication);
 
   const proof: ISuccessResult = {
     proof: verification.proof,
@@ -46,7 +44,6 @@ export async function PUT(
   )) as IVerifyResponse
 
   if(!verifyRes.success) {
-    console.log('Invalid proof', verifyRes);
     return NextResponse.json({ success: false, message: "Invalid proof" }, { status: 400 });
   }
 
@@ -75,7 +72,6 @@ export async function PUT(
 
   const draft = draftResult.rows[0];
 
-  console.log('SUB', draft.subtitle, publication_subtitle);
   // Consolidated check for title, subtitle, and content
   if (
     draft.title !== publication_title || 
@@ -115,8 +111,8 @@ export async function PUT(
     const version = '1';
     // Create article
     const articleResult = await client.query(
-      'INSERT INTO publications ("userId", "authorId", proof, signal, content, version) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
-      [userId, author_id_libro, proof, signal, draft.content, version]
+      'INSERT INTO publications ("userId", "authorId", proof, signal, content, version, title, subtitle, date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id',
+      [userId, author_id_libro, proof, signal, draft.content, version, publication_title, publication_subtitle, publication_date]
     );
 
     // Update draft status to published
