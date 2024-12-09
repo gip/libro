@@ -31,7 +31,7 @@ const Page = () => {
         and permissionless way. So simple. So important.<br /> */}
         A protocol to protect and preserve human-created texts, stories, novels, publications, articles, pictures, and more.<br />
         <br />
-        We use <Link href="https://world.org/world-id" className="text-blurple hover:underline">World ID</Link> to ensure all users are real humans.
+        Libro leverages World Network&apos;s <Link href="https://whitepaper.world.org/#proof-of-human-(poh)" className="text-blurple hover:underline" target="_blank" rel="noopener noreferrer">Proof of Human (PoH)</Link> to ensure that all users are real humans.
       </div>}
     <Footer />
   </>)
