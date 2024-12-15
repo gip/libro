@@ -34,7 +34,7 @@ import {
   CardContent,
 } from "@/components/ui/card"
 import './editor.css'
-import type { Author } from '@/lib/db/objects'
+import type { Author, Proof } from '@/lib/db/objects'
 import { all, createLowlight } from 'lowlight'
 
 const lowlight = createLowlight(all)
@@ -53,7 +53,8 @@ export default function Editor({
   setAuthorId = () => {},
   publicationDate,
   editable = true,
-  codeBlocks = false
+  codeBlocks = false,
+  proof
 }: { 
   authors: Author[], 
   initialContent: Object | null, 
@@ -66,7 +67,8 @@ export default function Editor({
   setAuthorId?: (authorId: string | null) => void,
   publicationDate?: string,
   editable?: boolean,
-  codeBlocks?: boolean
+  codeBlocks?: boolean,
+  proof?: Proof
 }) {
   const pathname = usePathname()
   const findAuthor = useCallback((): Author[] => {
@@ -151,7 +153,14 @@ export default function Editor({
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 pt-4">
+    <div data-libro-protocol="publication-w1"
+         data-libro-author-id={initialAuthorId}
+         data-libro-author-name={author[0].name}
+         data-libro-author-handle={author[0].handle}
+         data-libro-author-bio={author[0].bio}
+         data-libro-publication-date={publicationDate}
+         data-libro-proof={JSON.stringify(proof)}
+         className="max-w-4xl mx-auto px-4 py-6 pt-4">
       {editable && (
         <div className="sticky top-0 z-50 bg-background flex justify-center">
           <div className="flex items-center justify-between gap-2 pb-2">
@@ -239,6 +248,7 @@ export default function Editor({
 
       <div className="space-y-4">
         <textarea
+          data-libro-publication-title="$"
           value={title}
           onChange={(e) => {
             const newValue = e.target.value.slice(0, 80);
@@ -268,6 +278,7 @@ export default function Editor({
         
         {editable || subtitle ? (
           <Input
+           data-libro-publication-subtitle="$"
             type="text"
             value={subtitle}
             onChange={(e) => {
@@ -356,7 +367,6 @@ export default function Editor({
                       — {author.bio}
                     </span>
                   )}
-                  <span>.</span>
                 </div>
                 {publicationDate && (
                   <span className="text-gray-500">
@@ -372,9 +382,7 @@ export default function Editor({
           </div>
         )}
 
-        <div className="editable text-xl">
-          <EditorContent editor={editor} />
-        </div>
+        <EditorContent data-libro-content="$sub1" className="editable text-xl" editor={editor} />
       </div>
     </div>
   )
