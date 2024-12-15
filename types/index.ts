@@ -14,7 +14,7 @@ export type Author = {
   } | {
     html: string
   }
-  
+
   // Publication payload V1 that is signed
   export type PublicationV1 = {
     author_id_libro: string
@@ -41,4 +41,9 @@ export type Author = {
     merkle_root: string
     nullifier_hash: string
     verification_level: 'orb'
+  }
+
+  export type PublicationV1AndProof = {
+    publication: PublicationV1
+    proof: Proof
   }
