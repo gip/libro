@@ -77,9 +77,6 @@ importers:
       eruda:
         specifier: ^3.2.3
         version: 3.2.3
-      javascript:
-        specifier: link:highlight.js/lib/languages/javascript
-        version: link:highlight.js/lib/languages/javascript
       lowlight:
         specifier: ^3.2.0
         version: 3.2.0
@@ -144,9 +141,6 @@ importers:
       tailwindcss:
         specifier: ^3.4.10
         version: 3.4.10
-      typescript:
-        specifier: link:highlight.js/lib/languages/typescript
-        version: 5.7.2
 
 packages:
 
