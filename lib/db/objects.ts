@@ -1,8 +1,8 @@
 import { pool } from './index'
 import { cache } from 'react'
-import { Author, PublicationV1, Proof, PublicationInfo } from '@/types'
+import { Author, PublicationV1, Proof, PublicationInfo, PublicationV1AndProof } from '@/types'
 
-export type { Author, PublicationV1, Proof, PublicationInfo }
+export type { Author, PublicationV1, Proof, PublicationInfo, PublicationV1AndProof }
 
 export const getAuthor = cache(async (authorId: string): Promise<Author | null> => {
   const client = await pool.connect()
@@ -67,6 +67,28 @@ export const getPublication = cache(async (publicationId: string): Promise<Publi
     }
 
     return rows[0].signal
+  } finally {
+    client.release()
+  }
+})
+
+export const getPublicationAndProof = cache(async (publicationId: string): Promise<PublicationV1AndProof | null> => {
+  const client = await pool.connect()
+  console.log('LOA', publicationId)
+  try {
+    const { rows } = await client.query(
+      'SELECT signal, proof FROM publications WHERE id = $1',
+      [publicationId]
+    )
+
+    if (rows.length === 0) {
+      return null
+    }
+
+    return {
+      publication: rows[0].signal,
+      proof: rows[0].proof
+    }
   } finally {
     client.release()
   }

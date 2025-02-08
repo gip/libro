@@ -1,9 +1,9 @@
 import Editor from '@/components/Editor'
 import { timeAgo } from '@/lib/time'
 import Link from 'next/link'
-import { PublicationV1 as PublicationType, Author } from '@/lib/db/objects'
+import { PublicationV1 as PublicationType, Author, Proof } from '@/lib/db/objects'
 
-export const Publication = ({ publication, proofLink }: { publication: PublicationType, proofLink?: string }) => {
+export const Publication = ({ publication, proof, proofLink }: { publication: PublicationType, proof: Proof, proofLink?: string }) => {
 
   const authors: Author[] = [{ id: publication.author_id_libro, name: publication.author_name_libro,
                                bio: publication.author_bio_libro, handle: publication.author_handle_libro }]
@@ -30,6 +30,7 @@ export const Publication = ({ publication, proofLink }: { publication: Publicati
               initialSubtitle={publication.publication_subtitle}
               initialAuthorId={publication.author_id_libro}
               publicationDate={publication.publication_date}
+              proof={proof}
               editable={false}
               />
     </div>
