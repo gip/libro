@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import NextLink from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -82,6 +82,7 @@ export default function Editor({
   const [isAuthorDialogOpen, setIsAuthorDialogOpen] = useState(false)
   const [title, setLocalTitle] = useState(initialTitle)
   const [subtitle, setLocalSubtitle] = useState(initialSubtitle)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     setLocalAuthor(findAuthor())
@@ -98,6 +99,7 @@ export default function Editor({
         },
       }),
       Image.configure({
+        inline: true,
         allowBase64: true,
       }),
       Placeholder.configure({
@@ -148,6 +150,20 @@ export default function Editor({
     setAuthorId(author.id)
     setLocalAuthor([author])
     setIsAuthorDialogOpen(false)
+  }
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const base64 = e.target?.result as string
+      if (editor && base64) {
+        editor.chain().focus().setImage({ src: base64 }).run()
+      }
+    }
+    reader.readAsDataURL(file)
   }
 
   return (
@@ -209,7 +225,19 @@ export default function Editor({
                 <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
                   <LinkIcon className="h-3 w-3" />
                 </Button>
-                <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 w-7 p-0"
+                  onClick={() => fileInputRef.current?.click()}
+                >
                   <ImageIcon className="h-3 w-3" />
                 </Button>
               </div>
