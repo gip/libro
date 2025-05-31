@@ -1,20 +1,21 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useRouter } from 'next/navigation'
+import { timeAgo } from '@/lib/time'
 
 export type FeedItemD = {
     id: string;
     title: string;
+    subtitle?: string;
     content: { content: string } | { html: string };
     created_at?: string;
     updated_at?: string;
+    author_name?: string;
 }
 
 const FeedItemLoading = () => (
-  <>
-    <Skeleton className="h-4 w-[250px]" />
-    <Skeleton className="h-4 w-[200px]" />
-  </>)
+  <Skeleton className="h-4 w-[250px]" />
+)
 
 export const FeedItem = ({ item }: { item: FeedItemD | null }) => {
   const router = useRouter();
@@ -25,23 +26,26 @@ export const FeedItem = ({ item }: { item: FeedItemD | null }) => {
     }
   };
 
-  const getContent = (content: { content: string } | { html: string }) => {
-    if ('html' in content) {
-      return content.html;
-    }
-    return content.content;
-  };
-
   return (
     <Card key={item?.id} className={`shadow-sm w-full ${item ? 'cursor-pointer' : ''}`} onClick={handleClick}>
-      <CardHeader className="py-2 px-3">
-        <CardTitle className="text-base font-semibold">
-          {item ? item.title : <FeedItemLoading />}
-        </CardTitle>
-      </CardHeader>
       <CardContent className="py-2 px-3">
-        <div className="text-sm text-muted-foreground line-clamp-2">
-          {item ? JSON.stringify(getContent(item.content)) : <FeedItemLoading />}
+        <div className="flex flex-col gap-1">
+          <div className="text-sm font-medium line-clamp-1">
+            {item ? (item.title || '<No Title>') : <FeedItemLoading />}
+          </div>
+          <div className="flex flex-col gap-1 text-xs text-muted-foreground">
+            {item ? (
+              <>
+                <div className="flex items-center gap-2">
+                  {item.subtitle && <span className="line-clamp-1">{item.subtitle}</span>}
+                  {item.author_name && <span className="italic">Author: {item.author_name}</span>}
+                </div>
+                {item.created_at && <span className="italic">Started {timeAgo(item.created_at)}</span>}
+              </>
+            ) : (
+              <FeedItemLoading />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

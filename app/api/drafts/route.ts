@@ -28,7 +28,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     const userId = userResult.rows[0].id;
 
     const draftsResult = await client.query(
-      'SELECT * FROM drafts WHERE "userId" = $1 AND status = $2',
+      `SELECT d.*, a.name as author_name 
+       FROM drafts d 
+       LEFT JOIN authors a ON d."authorId" = a.id 
+       WHERE d."userId" = $1 AND d.status = $2`,
       [userId, 'editing']
     );
 
