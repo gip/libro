@@ -1,9 +1,9 @@
 import Editor from '@/components/Editor'
 import { Diamond } from '@/components/Diamond'
 import { Proof as ProofType, PublicationV1 as PublicationType, Author as AuthorType } from '@/lib/db/objects'
+import { CopyButton } from './CopyButton'
 
 export const Proof = ({ publication, proof }: { publication: PublicationType, proof: ProofType }) => {
-
   const authors: AuthorType[] = [{ id: '0', name: 'Libro Team', handle: 'libro' }]
 
   const title = 'Independent Verification of Human Authorship'
@@ -85,16 +85,70 @@ export const Proof = ({ publication, proof }: { publication: PublicationType, pr
 
   const content = contentRaw.replace(/\n/g, '')
 
+  const codeContent = `// 1. Gathering the data from the document (author, title, subtitle, content and publication date) in the publication object
+const publication = {
+  // ID for this athor, refer to ${process.env.NEXT_PUBLIC_APP_URL}/a/${publication.author_id_libro}
+  author_id_libro: '${publication.author_id_libro}',
+  // This is the name of the author who signed the document
+  author_name_libro: "${publication.author_name_libro}",
+  // This is the author's handle
+  author_handle_libro: "${publication.author_handle_libro}",
+  // The author's bio is included in the signed payload
+  author_bio_libro: "${publication.author_bio_libro}",
+  // Below are title, subtitle, content and publication date
+  publication_title: "${eQ(publication.publication_title)}",
+  publication_subtitle: "${eQ(publication.publication_subtitle)}",
+  publication_content: { html: "${'html' in publication.publication_content ? eR(publication.publication_content.html) : ''}" },
+  publication_date: '${publication.publication_date}'
+};
+
+// 2. Gather the data from the proof in the proof object
+const proof = '${proof.proof}';
+const merkle_root = '${proof.merkle_root}';
+const nullifier_hash = '${proof.nullifier_hash}';
+const verification_level = '${proof.verification_level}';
+
+// 3. Hash the document data to create a signal hash
+const input = Buffer.from(JSON.stringify(publication));
+const { Hash } = require('ox');
+const hash = BigInt(Hash.keccak256(input, { as: 'Hex' })) >> 8n;
+const rawDigest = hash.toString(16);
+const signal_hash = \`0x\${rawDigest.padStart(64, '0')}\`;
+
+// 4. Create the body of the request
+const body = {
+  proof,
+  merkle_root,
+  nullifier_hash,
+  verification_level,
+  action: 'written-by-a-human',
+  signal_hash
+};
+// 5. Send the request
+const app_id = \`${process.env.NEXT_PUBLIC_WLD_CLIENT_ID}\`;
+const url = \`https://developer.worldcoin.org/api/v2/verify/\${app_id}\`;
+const response = await fetch(url, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(body)
+});
+// 6. Print the response
+const json = await response.json();
+console.log(json);`
+
   return (
     <div className="w-[90%] mx-auto space-y-4 py-4">
-        <Editor authors={authors}
-              initialContent={content}
-              initialTitle={title}
-              initialSubtitle={''}
-              initialAuthorId={'0'}
-              editable={false}
-              codeBlocks={true}
-              />
+        <div className="relative">
+          <Editor authors={authors}
+                initialContent={content}
+                initialTitle={title}
+                initialSubtitle={''}
+                initialAuthorId={'0'}
+                editable={false}
+                codeBlocks={true}
+                />
+          <CopyButton codeContent={codeContent} />
+        </div>
         <Diamond />
     </div>
   );
