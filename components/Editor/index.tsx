@@ -15,7 +15,7 @@ import js from 'highlight.js/lib/languages/javascript'
 import ts from 'highlight.js/lib/languages/typescript'
 import { Button } from '@/components/ui/button'
 import { Input } from "@/components/ui/input"
-import { Bold, Italic, Strikethrough, Quote, LinkIcon, ImageIcon, List, ListOrdered, ChevronDown, X, Plus } from 'lucide-react'
+import { Bold, Italic, Strikethrough, Quote, LinkIcon, ImageIcon, List, ListOrdered, ChevronDown, X, Plus, Underline as UnderlineIcon } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -192,6 +192,9 @@ export default function Editor({
       case 'strike':
         editor.chain().focus().toggleStrike().run()
         break
+      case 'underline':
+        editor.chain().focus().toggleUnderline().run()
+        break
       case 'quote':
         editor.chain().focus().toggleBlockquote().run()
         break
@@ -307,6 +310,14 @@ export default function Editor({
                   className={`h-7 w-7 p-0 ${editor?.isActive('italic') ? 'bg-muted' : ''}`}
                 >
                   <Italic className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toggleFormat('underline')}
+                  className={`h-7 w-7 p-0 ${editor?.isActive('underline') ? 'bg-muted' : ''}`}
+                >
+                  <UnderlineIcon className="h-3 w-3" />
                 </Button>
                 <Button
                   variant="ghost"
