@@ -31,7 +31,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       `SELECT d.*, a.name as author_name 
        FROM drafts d 
        LEFT JOIN authors a ON d."authorId" = a.id 
-       WHERE d."userId" = $1 AND d.status = $2`,
+       WHERE d."userId" = $1 AND d.status = $2
+       ORDER BY d.created_at DESC`,
       [userId, 'editing']
     );
 

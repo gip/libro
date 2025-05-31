@@ -38,9 +38,12 @@ export const FeedItem = ({ item }: { item: FeedItemD | null }) => {
               <>
                 <div className="flex items-center gap-2">
                   {item.subtitle && <span className="line-clamp-1">{item.subtitle}</span>}
-                  {item.author_name && <span className="italic">Author: {item.author_name}</span>}
                 </div>
-                {item.created_at && <span className="italic">Started {timeAgo(item.created_at)}</span>}
+                {item.created_at && (
+                  <p className="text-xs text-muted-foreground italic text-right">
+                    Started {timeAgo(item.created_at)}
+                  </p>
+                )}
               </>
             ) : (
               <FeedItemLoading />
