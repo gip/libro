@@ -64,6 +64,41 @@ const editorStyles = `
       line-height: 1.7;
       margin-bottom: 1em;
     }
+
+    ul, ol {
+      padding-left: 1.5em;
+      margin: 1em 0;
+    }
+
+    ul {
+      list-style-type: disc;
+    }
+
+    ul li {
+      margin: 0.5em 0;
+      line-height: 1.7;
+    }
+
+    ul li::marker {
+      color: #666;
+    }
+
+    ol {
+      list-style-type: decimal;
+    }
+
+    ol li {
+      margin: 0.5em 0;
+      line-height: 1.7;
+    }
+
+    ol li::marker {
+      color: #666;
+    }
+
+    li > p {
+      margin: 0;
+    }
   }
 `
 
@@ -109,6 +144,8 @@ export default function Editor({
   const [title, setLocalTitle] = useState(initialTitle)
   const [subtitle, setLocalSubtitle] = useState(initialSubtitle)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
+  const [linkUrl, setLinkUrl] = useState('')
 
   useEffect(() => {
     setLocalAuthor(findAuthor())
@@ -207,6 +244,27 @@ export default function Editor({
     reader.readAsDataURL(file)
   }
 
+  const addLink = () => {
+    if (!editor || !linkUrl) return
+
+    // If there's a selection, add the link to the selected text
+    if (editor.state.selection.empty) {
+      // If no text is selected, insert the URL as the link text
+      editor.chain().focus().setLink({ href: linkUrl }).run()
+    } else {
+      // If text is selected, make it a link
+      editor.chain().focus().setLink({ href: linkUrl }).run()
+    }
+
+    setLinkUrl('')
+    setIsLinkDialogOpen(false)
+  }
+
+  const removeLink = () => {
+    if (!editor) return
+    editor.chain().focus().unsetLink().run()
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 pt-4">
       {editable && (
@@ -261,7 +319,7 @@ export default function Editor({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => toggleFormat('strike')}
+                  onClick={() => toggleFormat('quote')}
                   className={`h-7 w-7 p-0 ${editor?.isActive('blockquote') ? 'bg-muted' : ''}`}
                 >
                   <Quote className="h-3 w-3" />
@@ -269,9 +327,58 @@ export default function Editor({
               </div>
 
               <div className="flex items-center gap-1 border-r px-2">
-                <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                  <LinkIcon className="h-3 w-3" />
-                </Button>
+                <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className={`h-7 w-7 p-0 ${editor?.isActive('link') ? 'bg-muted' : ''}`}
+                    >
+                      <LinkIcon className="h-3 w-3" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Add Link</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid gap-2">
+                        <Input
+                          placeholder="Enter URL..."
+                          value={linkUrl}
+                          onChange={(e) => setLinkUrl(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault()
+                              addLink()
+                            }
+                          }}
+                        />
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        {editor?.isActive('link') && (
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => {
+                              removeLink()
+                              setIsLinkDialogOpen(false)
+                            }}
+                          >
+                            Remove Link
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          onClick={addLink}
+                          disabled={!linkUrl}
+                        >
+                          Add Link
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
                 <input
                   type="file"
                   ref={fileInputRef}
