@@ -41,6 +41,32 @@ const lowlight = createLowlight(all)
 lowlight.register('js', js)
 lowlight.register('ts', ts)
 
+const editorStyles = `
+  .ProseMirror {
+    > h1 {
+      font-size: 2.5em;
+      font-weight: 700;
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+      line-height: 1.2;
+    }
+
+    > h2 {
+      font-size: 2em;
+      font-weight: 600;
+      margin-top: 1.25em;
+      margin-bottom: 0.5em;
+      line-height: 1.3;
+    }
+
+    > p {
+      font-size: 1.125em;
+      line-height: 1.7;
+      margin-bottom: 1em;
+    }
+  }
+`
+
 export default function Editor({ 
   authors, 
   initialContent, 
@@ -141,6 +167,21 @@ export default function Editor({
     }
   }
 
+  const handleStyleChange = (style: string) => {
+    if (!editor) return
+    switch (style) {
+      case 'normal':
+        editor.chain().focus().setParagraph().run()
+        break
+      case 'heading-1':
+        editor.chain().focus().toggleHeading({ level: 1 }).run()
+        break
+      case 'heading-2':
+        editor.chain().focus().toggleHeading({ level: 2 }).run()
+        break
+    }
+  }
+
   const removeAuthor = (index: number) => {
     setAuthorId(null)
     setLocalAuthor([])
@@ -180,9 +221,15 @@ export default function Editor({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem>Normal</DropdownMenuItem>
-                  <DropdownMenuItem>Heading 1</DropdownMenuItem>
-                  <DropdownMenuItem>Heading 2</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleStyleChange('normal')}>
+                    Normal
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleStyleChange('heading-1')}>
+                    Heading 1
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleStyleChange('heading-2')}>
+                    Heading 2
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
@@ -214,7 +261,7 @@ export default function Editor({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => toggleFormat('quote')}
+                  onClick={() => toggleFormat('strike')}
                   className={`h-7 w-7 p-0 ${editor?.isActive('blockquote') ? 'bg-muted' : ''}`}
                 >
                   <Quote className="h-3 w-3" />
@@ -401,6 +448,7 @@ export default function Editor({
         )}
 
         <div className="editable text-xl">
+          <style>{editorStyles}</style>
           <EditorContent editor={editor} />
         </div>
       </div>
