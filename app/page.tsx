@@ -6,6 +6,7 @@ import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { useSession } from 'next-auth/react'
 import { Divider } from '@/components/Divider'
+import { Button } from '@/components/ui/button'
 
 const Page = () => {
   const { data: session, status } = useSession()
@@ -32,6 +33,11 @@ const Page = () => {
         A protocol to protect and preserve human-created texts, stories, novels, publications, articles, pictures, and more.<br />
         <br />
         Libro leverages World Network&apos;s <Link href="https://whitepaper.world.org/#proof-of-human-(poh)" className="text-blurple hover:underline" target="_blank" rel="noopener noreferrer">Proof of Human (PoH)</Link> to ensure that all users are real humans.
+        <div className="mt-8">
+          <Button asChild>
+            <Link href="/latest">See Latest Publications</Link>
+          </Button>
+        </div>
       </div>}
     <Footer />
   </>)
