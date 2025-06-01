@@ -4,6 +4,8 @@ import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { useRouter } from 'next/navigation'
 
 import { Separator } from "@/components/ui/separator"
 import type { FeedItemD } from '@/components/FeedItem'
@@ -15,6 +17,7 @@ export const Feed = () => {
   const { data: session, status } = useSession(); 
   const [feedStatus, setFeedStatus] = useState<FeedStatus>('loading')
   const [feedItems, setFeedItems] = useState<FeedItemD[]>([])
+  const router = useRouter()
   
   useEffect(() => {
     const fetchData = async () => {
@@ -34,11 +37,32 @@ export const Feed = () => {
     fetchData();
   }, []);
 
+  const EmptyFeed = () => (
+    <div className="w-[90%] mx-auto py-8 text-center">
+      <h3 className="text-xl font-semibold mb-2">No drafts yet</h3>
+      <p className="text-muted-foreground mb-4">Start writing your first draft to get started</p>
+      <Button onClick={() => router.push('/d/new')}>
+        Create New Draft
+      </Button>
+    </div>
+  )
+
   const FeedContent = () => (
     <div className="w-[90%] mx-auto space-y-2 py-4">
-      {feedItems && feedItems.map((item) => (
-        <FeedItem key={item.id} item={item} />
-      ))}
+      {feedItems && feedItems.length > 0 ? (
+        <>
+          {feedItems.map((item) => (
+            <FeedItem key={item.id} item={item} />
+          ))}
+          <div className="text-center pt-8">
+            <Button onClick={() => router.push('/d/new')}>
+              Create New Draft
+            </Button>
+          </div>
+        </>
+      ) : (
+        <EmptyFeed />
+      )}
     </div>
   )
 

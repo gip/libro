@@ -15,7 +15,7 @@ import js from 'highlight.js/lib/languages/javascript'
 import ts from 'highlight.js/lib/languages/typescript'
 import { Button } from '@/components/ui/button'
 import { Input } from "@/components/ui/input"
-import { Bold, Italic, Strikethrough, Quote, LinkIcon, ImageIcon, List, ListOrdered, ChevronDown, X, Plus } from 'lucide-react'
+import { Bold, Italic, Strikethrough, Quote, LinkIcon, ImageIcon, List, ListOrdered, ChevronDown, X, Plus, Underline as UnderlineIcon } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,6 +40,67 @@ import { all, createLowlight } from 'lowlight'
 const lowlight = createLowlight(all)
 lowlight.register('js', js)
 lowlight.register('ts', ts)
+
+const editorStyles = `
+  .ProseMirror {
+    > h1 {
+      font-size: 2.5em;
+      font-weight: 700;
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+      line-height: 1.2;
+    }
+
+    > h2 {
+      font-size: 2em;
+      font-weight: 600;
+      margin-top: 1.25em;
+      margin-bottom: 0.5em;
+      line-height: 1.3;
+    }
+
+    > p {
+      font-size: 1.125em;
+      line-height: 1.7;
+      margin-bottom: 1em;
+    }
+
+    ul, ol {
+      padding-left: 1.5em;
+      margin: 1em 0;
+    }
+
+    ul {
+      list-style-type: disc;
+    }
+
+    ul li {
+      margin: 0.5em 0;
+      line-height: 1.7;
+    }
+
+    ul li::marker {
+      color: #666;
+    }
+
+    ol {
+      list-style-type: decimal;
+    }
+
+    ol li {
+      margin: 0.5em 0;
+      line-height: 1.7;
+    }
+
+    ol li::marker {
+      color: #666;
+    }
+
+    li > p {
+      margin: 0;
+    }
+  }
+`
 
 export default function Editor({ 
   authors, 
@@ -83,6 +144,8 @@ export default function Editor({
   const [title, setLocalTitle] = useState(initialTitle)
   const [subtitle, setLocalSubtitle] = useState(initialSubtitle)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
+  const [linkUrl, setLinkUrl] = useState('')
 
   useEffect(() => {
     setLocalAuthor(findAuthor())
@@ -129,6 +192,9 @@ export default function Editor({
       case 'strike':
         editor.chain().focus().toggleStrike().run()
         break
+      case 'underline':
+        editor.chain().focus().toggleUnderline().run()
+        break
       case 'quote':
         editor.chain().focus().toggleBlockquote().run()
         break
@@ -137,6 +203,21 @@ export default function Editor({
         break
       case 'ordered-list':
         editor.chain().focus().toggleOrderedList().run()
+        break
+    }
+  }
+
+  const handleStyleChange = (style: string) => {
+    if (!editor) return
+    switch (style) {
+      case 'normal':
+        editor.chain().focus().setParagraph().run()
+        break
+      case 'heading-1':
+        editor.chain().focus().toggleHeading({ level: 1 }).run()
+        break
+      case 'heading-2':
+        editor.chain().focus().toggleHeading({ level: 2 }).run()
         break
     }
   }
@@ -166,6 +247,27 @@ export default function Editor({
     reader.readAsDataURL(file)
   }
 
+  const addLink = () => {
+    if (!editor || !linkUrl) return
+
+    // If there's a selection, add the link to the selected text
+    if (editor.state.selection.empty) {
+      // If no text is selected, insert the URL as the link text
+      editor.chain().focus().setLink({ href: linkUrl }).run()
+    } else {
+      // If text is selected, make it a link
+      editor.chain().focus().setLink({ href: linkUrl }).run()
+    }
+
+    setLinkUrl('')
+    setIsLinkDialogOpen(false)
+  }
+
+  const removeLink = () => {
+    if (!editor) return
+    editor.chain().focus().unsetLink().run()
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 pt-4">
       {editable && (
@@ -180,9 +282,15 @@ export default function Editor({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem>Normal</DropdownMenuItem>
-                  <DropdownMenuItem>Heading 1</DropdownMenuItem>
-                  <DropdownMenuItem>Heading 2</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleStyleChange('normal')}>
+                    Normal
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleStyleChange('heading-1')}>
+                    Heading 1
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleStyleChange('heading-2')}>
+                    Heading 2
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
@@ -206,6 +314,14 @@ export default function Editor({
                 <Button
                   variant="ghost"
                   size="sm"
+                  onClick={() => toggleFormat('underline')}
+                  className={`h-7 w-7 p-0 ${editor?.isActive('underline') ? 'bg-muted' : ''}`}
+                >
+                  <UnderlineIcon className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => toggleFormat('strike')}
                   className={`h-7 w-7 p-0 ${editor?.isActive('strike') ? 'bg-muted' : ''}`}
                 >
@@ -222,9 +338,58 @@ export default function Editor({
               </div>
 
               <div className="flex items-center gap-1 border-r px-2">
-                <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                  <LinkIcon className="h-3 w-3" />
-                </Button>
+                <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className={`h-7 w-7 p-0 ${editor?.isActive('link') ? 'bg-muted' : ''}`}
+                    >
+                      <LinkIcon className="h-3 w-3" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Add Link</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid gap-2">
+                        <Input
+                          placeholder="Enter URL..."
+                          value={linkUrl}
+                          onChange={(e) => setLinkUrl(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault()
+                              addLink()
+                            }
+                          }}
+                        />
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        {editor?.isActive('link') && (
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => {
+                              removeLink()
+                              setIsLinkDialogOpen(false)
+                            }}
+                          >
+                            Remove Link
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          onClick={addLink}
+                          disabled={!linkUrl}
+                        >
+                          Add Link
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -401,6 +566,7 @@ export default function Editor({
         )}
 
         <div className="editable text-xl">
+          <style>{editorStyles}</style>
           <EditorContent editor={editor} />
         </div>
       </div>
