@@ -112,3 +112,24 @@ export const getPublicationInfoByAuthor = cache(async (authorId: string): Promis
     client.release()
   }
 })
+
+export const getLatestPublications = cache(async (limit: number = 20): Promise<PublicationInfo[]> => {
+  const client = await pool.connect()
+  try {
+    const { rows } = await client.query(
+      'SELECT id, signal FROM publications ORDER BY (signal->>\'publication_date\')::timestamp DESC LIMIT $1',
+      [limit]
+    )
+
+    return rows.map(row => ({
+      id: row.id,
+      author_id_libro: row.signal.author_id_libro,
+      publication_date: row.signal.publication_date,
+      author_name_libro: row.signal.author_name_libro,
+      publication_title: row.signal.publication_title,
+      publication_subtitle: row.signal.publication_subtitle
+    }))
+  } finally {
+    client.release()
+  }
+})
