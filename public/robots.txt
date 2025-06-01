@@ -1,0 +1,16 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+Allow: /latest
+Allow: /privacy
+Allow: /terms
+
+# Disallow private routes
+Disallow: /api/
+Disallow: /p/
+Disallow: /a/
+Disallow: /d/
+Disallow: /info
+
+# Sitemap
+Sitemap: /sitemap.xml
