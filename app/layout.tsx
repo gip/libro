@@ -13,6 +13,12 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.ico',
   },
+  openGraph: {
+    title: 'Libro',
+    description: 'A protocol to protect and preserve human-created texts, stories, novels, publications, articles, and pictures.',
+    url: 'https://worldlibro.com',
+    type: 'website',
+  },
 }
 
 export default function RootLayout({
