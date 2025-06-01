@@ -3,13 +3,36 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { Publication } from '@/components/Publication'
 import { getPublication } from '@/lib/db/objects'
+import { Metadata } from 'next'
+import { unstable_cache } from 'next/cache'
 
 type Params = Promise<{ publicationId: string }>
+
+const getCachedPublication = unstable_cache(
+  async (publicationId: string) => {
+    return getPublication(publicationId)
+  },
+  ['publication'],
+  { revalidate: 3600 }
+)
+
+export const generateMetadata = async ({ params }: { params: Params }): Promise<Metadata> => {
+  const { publicationId } = await params
+  const publication = await getCachedPublication(publicationId)
+  
+  return {
+    title: publication?.publication_title || 'Publication',
+    openGraph: {
+      title: publication?.publication_title || 'Publication',
+      url: `https://worldlibro.com/p/${publicationId}`,
+    },
+  }
+}
 
 const Page = async ({ params }: { params: Params }) => {
 
   const { publicationId } = await params
-  const publication = await getPublication(publicationId)
+  const publication = await getCachedPublication(publicationId)
 
   return (<>
     <Header />
