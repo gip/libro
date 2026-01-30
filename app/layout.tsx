@@ -8,15 +8,15 @@ import { Analytics } from '@vercel/analytics/next'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Libro',
+  title: 'Memorioso',
   description: 'A protocol to protect and preserve human-created texts, stories, novels, publications, articles, and pictures.',
   icons: {
     icon: '/favicon.ico',
   },
   openGraph: {
-    title: 'Libro',
+    title: 'Memorioso',
     description: 'A protocol to protect and preserve human-created texts, stories, novels, publications, articles, and pictures.',
-    url: 'https://worldlibro.com',
+    url: 'https://memorioso.xyz',
     type: 'website',
   },
 }

@@ -11,7 +11,7 @@ import Link from 'next/link'
 
 export const Author = ({ create, author, publicationInfos, redirect = null }: { create: boolean, author: AuthorType | null, publicationInfos: PublicationInfo[], redirect?: string | null }) => {
   const { data: session, status } = useSession()
-  const [newAuthor, setNewAuthor] = useState<Omit<AuthorType, 'id'>>({ 
+  const [newAuthor, setNewAuthor] = useState<Omit<AuthorType, 'id'>>({
     name: '',
     bio: '',
     handle: ''
@@ -53,7 +53,7 @@ export const Author = ({ create, author, publicationInfos, redirect = null }: { 
   if (author) {
     return (<>
       <div className="w-[90%] mx-auto">
-        <div className="text-xs italic text-center text-gray-500">This author was created by a human on Libro. Every publication under this author is signed by a human being.<br/>This is not a bot.</div>
+        <div className="text-xs italic text-center text-gray-500">This author was created by a human on Memorioso. Every publication under this author is signed by a human being.<br />This is not a bot.</div>
       </div>
       <div className="w-[90%] mx-auto space-y-8 py-8">
         <div className="space-y-4 text-center">
@@ -74,38 +74,38 @@ export const Author = ({ create, author, publicationInfos, redirect = null }: { 
           <div className="text-xm">
             <span className="text-xs">Link: </span>
             <span className="text-xm text-blurple">
-            <a href={`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.handle}`} className="text-sm text-burple hover:underline">
-              {`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.handle}`}
-            </a></span>
+              <a href={`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.handle}`} className="text-sm text-burple hover:underline">
+                {`${process.env.NEXT_PUBLIC_APP_URL}/a/${author.handle}`}
+              </a></span>
           </div>
         </div>
         <div className="space-y-4">
           <div className="text-sm text-muted-foreground">
             {publicationInfos.length === 0 && "This author has not published yet"}
-            {publicationInfos.length > 0 && publicationInfos.length <= 20 && 
+            {publicationInfos.length > 0 && publicationInfos.length <= 20 &&
               `This author has ${publicationInfos.length} publication${publicationInfos.length !== 1 ? 's:' : '.'}`
             }
             {publicationInfos.length > 20 && "This author has 20+ publications:"}
           </div>
-          </div>
-          <div className="space-y-4">
-            {publicationInfos.slice(0, 20).map(publicationInfo => (
-              <Link href={`/p/${publicationInfo.id}`} key={publicationInfo.id}>
-                <div className="flex items-center gap-2">
-                  <span>
-                    <span className="italic underline hover:text-blue-500">{publicationInfo.publication_title}</span>
-                    <br/>
-                    <span className="text-xs">{new Date(publicationInfo.publication_date).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric', 
-                      year: 'numeric'
-                    })}</span>
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
         </div>
+        <div className="space-y-4">
+          {publicationInfos.slice(0, 20).map(publicationInfo => (
+            <Link href={`/p/${publicationInfo.id}`} key={publicationInfo.id}>
+              <div className="flex items-center gap-2">
+                <span>
+                  <span className="italic underline hover:text-blue-500">{publicationInfo.publication_title}</span>
+                  <br />
+                  <span className="text-xs">{new Date(publicationInfo.publication_date).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}</span>
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
     </>)
   }
 
