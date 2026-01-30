@@ -6,6 +6,6 @@ become significantly more challenging. Our mission is to ensure human creativity
 individuals to create, sign, share, verify, archive and pay for content made by other humans in a fully decentralized
 and permissionless way. So simple. So important.
 
-The first iteration of Memorioso is built on [World](https://world.org/), the real human network.
+The first iteration of Memorioso (the product) and Libro (the protocol) is built on [World](https://world.org/), the real human network.
 
 *Memorioso is currently in the [Make It Work](https://www.perplexity.ai/search/what-the-make-it-work-stage-wh-2iYhHhS4T9CCGkfezjDqwA) stage.*
