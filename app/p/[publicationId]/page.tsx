@@ -19,12 +19,12 @@ const getCachedPublication = unstable_cache(
 export const generateMetadata = async ({ params }: { params: Params }): Promise<Metadata> => {
   const { publicationId } = await params
   const publication = await getCachedPublication(publicationId)
-  
+
   return {
     title: publication?.publication_title || 'Publication',
     openGraph: {
       title: publication?.publication_title || 'Publication',
-      url: `https://worldlibro.com/p/${publicationId}`,
+      url: `https://memoriozo.xyz/p/${publicationId}`,
     },
   }
 }

@@ -4,16 +4,16 @@ import { Proof as ProofType, PublicationV1 as PublicationType, Author as AuthorT
 import { CopyButton } from './CopyButton'
 
 export const Proof = ({ publication, proof }: { publication: PublicationType, proof: ProofType }) => {
-  const authors: AuthorType[] = [{ id: '0', name: 'Libro Team', handle: 'libro' }]
+  const authors: AuthorType[] = [{ id: '0', name: 'Memorioso Team', handle: 'libro' }]
 
   const title = 'Independent Verification of Human Authorship'
 
   const eQ = (str: string) => str.replace(/\"/g, '\\"')
   const eR = (str: string) => eQ(str.replace(/</g, '&lt;').replace(/>/g, '&gt;'))
-  
+
   const contentRaw = `This document will show how to independently verify the proof of authorship of the publication <i><u>${publication.publication_title}</u></i> authored by <a href="${process.env.NEXT_PUBLIC_APP_URL}/a/${publication.author_id_libro}">${publication.author_name_libro}</a>.
 <br/>
-<br/>In a zero-knowledge world, the proof of authorship should always be verifiable by external parties. In the longer term, it should be possible for any agent or consumer of content to verify the proof of Human Authorship (HA) and trust the content without relying on Libro or even World's zero-knowledge infrastructure.
+<br/>In a zero-knowledge world, the proof of authorship should always be verifiable by external parties. In the longer term, it should be possible for any agent or consumer of content to verify the proof of Human Authorship (HA) and trust the content without relying on Memorioso or even World's zero-knowledge infrastructure.
 <br/>
 <br/>As a first step, we provide a way to independently verify the proof of authorship using World's zero-knowledge infrastructure. In the future, we plan to support our own independent implementation of proof verification as well.
 <br/>
@@ -97,18 +97,18 @@ export const Proof = ({ publication, proof }: { publication: PublicationType, pr
 
   return (
     <div className="w-[90%] mx-auto space-y-4 py-4">
-        <div className="relative">
-          <Editor authors={authors}
-                initialContent={content}
-                initialTitle={title}
-                initialSubtitle={''}
-                initialAuthorId={'0'}
-                editable={false}
-                codeBlocks={true}
-                />
-          <CopyButton codeContent={codeContent} />
-        </div>
-        <Diamond />
+      <div className="relative">
+        <Editor authors={authors}
+          initialContent={content}
+          initialTitle={title}
+          initialSubtitle={''}
+          initialAuthorId={'0'}
+          editable={false}
+          codeBlocks={true}
+        />
+        <CopyButton codeContent={codeContent} />
+      </div>
+      <Diamond />
     </div>
   );
 }
